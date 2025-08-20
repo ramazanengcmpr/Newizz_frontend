@@ -1168,7 +1168,9 @@
 
     <script>
 document.addEventListener("DOMContentLoaded", function () {
-    const API_BASE = "https://newizz-backend.onrender.com"; // 🔗 Render backend linkin
+   const API_BASE = location.hostname.includes("localhost")
+  ? "http://localhost:3000"
+  : "https://newizz-proje.onrender.com";
 
     // Harita başlat
     const map = L.map("map").setView([25.276987, 55.296249], 11); // Dubai merkezi
