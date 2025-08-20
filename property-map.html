@@ -1167,22 +1167,12 @@
     <script src="assets/js/wow.min.js"></script>
     <script src="assets/js/main.js"></script>
     <!-- Leaflet için kütüphane ekle (head veya scriptlerin üstüne) -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-   
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   const container = document.querySelector(".row.cs_row_gap_20"); // Kartların olduğu satır
   const API_BASE = location.hostname.includes("localhost")
     ? "http://localhost:3000"
     : "https://newizz-proje.onrender.com";
-
-  // Haritayı kur (Dubai merkez)
-  const map = L.map("map").setView([25.276987, 55.296249], 11);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: "© OpenStreetMap contributors",
-    maxZoom: 19,
-  }).addTo(map);
 
   // Verileri çek
   fetch(`${API_BASE}/api/properties`)
@@ -1197,22 +1187,19 @@ document.addEventListener("DOMContentLoaded", function () {
         const id = property._id || property.id || "";
         const title = property.title || "";
         const locationText = property.location || "";
-        const beds = property.beds ?? property.bedrooms ?? "-";
-        const baths = property.baths ?? "-";
-        const area = property.area ?? "-";
+        const bedrooms = property.bedrooms ?? "-";
+        const bathrooms = property.bathrooms ?? "-";
+        const size = property.size ?? "-";
         const status = property.status ?? "";
         const priceText =
-          typeof property.price === "number" ? property.price.toLocaleString() : (property.price || "-");
+          typeof property.price === "number"
+            ? property.price.toLocaleString()
+            : (property.price || "-");
         const scoreValue =
-          typeof property.score === "number" ? property.score.toFixed(2) : "N/A";
+          typeof property.score === "number"
+            ? property.score.toFixed(2)
+            : "N/A";
         const mainImage = property.mainImage || "assets/img/default.jpg";
-
-        // Harita işaretleyicisi
-        if (property.lat && property.lng) {
-          L.marker([property.lat, property.lng])
-            .addTo(map)
-            .bindPopup(`<b>${title}</b><br>${locationText}<br>AED ${priceText}`);
-        }
 
         return `
           <div class="col-md-6 wow fadeInUp">
@@ -1230,9 +1217,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     <i class="fa-solid fa-location-dot"></i> ${locationText}
                   </p>
                   <ul class="cs_card_features_list cs_mp_0">
-                    <li><span class="cs_accent_color"><i class="fa-solid fa-bed"></i></span> ${beds} BR</li>
-                    <li><span class="cs_accent_color"><i class="fa-solid fa-bath"></i></span> ${baths} baths</li>
-                    <li><span class="cs_accent_color"><i class="fa-solid fa-vector-square"></i></span> ${area} sqft</li>
+                    <li><span class="cs_accent_color"><i class="fa-solid fa-bed"></i></span> ${bedrooms} BR</li>
+                    <li><span class="cs_accent_color"><i class="fa-solid fa-bath"></i></span> ${bathrooms} baths</li>
+                    <li><span class="cs_accent_color"><i class="fa-solid fa-vector-square"></i></span> ${size} sqft</li>
                   </ul>
                 </div>
                 <div class="cs_card_btns_wrapper">
