@@ -24,6 +24,9 @@
     <link rel="stylesheet" href="assets/css/odometer.css">
     <link rel="stylesheet" href="assets/css/animate.css">
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
  </head>
   <body>
     <!-- Start Preloader -->
@@ -982,7 +985,7 @@
                 <li>
                   <a class="cs_pagination_item cs_center" href="#">14</a>
                 </li>
-                <li>
+                <li></head>
                   <a href="#" aria-label="Pagination arrow right" class="cs_pagination_arrow cs_pagination_arrow_right cs_center cs_accent_color">
                     <svg width="11" height="20" viewBox="0 0 11 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M8.32057e-07 0.96476L4.21689e-08 19.0353C4.79022e-09 19.8904 1.03644 20.326 1.65182 19.7129L10.7206 10.6777C11.0931 10.3066 11.0931 9.69347 10.7206 9.32222L1.65182 0.286953C1.03644 -0.325993 8.69435e-07 0.109636 8.32057e-07 0.96476Z" fill="currentColor"/>
@@ -992,9 +995,7 @@
               </ul>
             </div>
             <div class="col-xl-5 wow fadeInRight">
-              <div class="cs_view_map cs_radius_20">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d193595.2528001631!2d-74.14448723354508!3d40.69763123329699!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew%20York%2C%20NY%2C%20USA!5e0!3m2!1sen!2sbd!4v1731562919890!5m2!1sen!2sbd" title="Google map" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
-                </iframe>
+             <div id="map" class="cs_view_map cs_radius_20" style="height: 500px;"></div>
               </div>
             </div>
           </div>
@@ -1165,51 +1166,81 @@
     <script src="assets/js/odometer.js"></script>
     <script src="assets/js/wow.min.js"></script>
     <script src="assets/js/main.js"></script>
+    <!-- Leaflet için kütüphane ekle (head veya scriptlerin üstüne) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
    
- <script>
+<script>
 document.addEventListener("DOMContentLoaded", function () {
   const container = document.querySelector(".row.cs_row_gap_20"); // Kartların olduğu satır
   const API_BASE = location.hostname.includes("localhost")
     ? "http://localhost:3000"
     : "https://newizz-proje.onrender.com";
 
+  // Haritayı kur (Dubai merkez)
+  const map = L.map("map").setView([25.276987, 55.296249], 11);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "© OpenStreetMap contributors",
+    maxZoom: 19,
+  }).addTo(map);
+
   // Verileri çek
   fetch(`${API_BASE}/api/properties`)
-    .then((res) => res.json())
+    .then((res) => {
+      if (!res.ok) throw new Error(`API Hatası: ${res.status}`);
+      return res.json();
+    })
     .then((properties) => {
       container.innerHTML = ""; // Statik kartları temizle
 
-      properties.forEach((property) => {
+      const cardsHtml = properties.map((property) => {
+        const id = property._id || property.id || "";
+        const title = property.title || "";
+        const locationText = property.location || "";
+        const beds = property.beds ?? property.bedrooms ?? "-";
+        const baths = property.baths ?? "-";
+        const area = property.area ?? "-";
+        const status = property.status ?? "";
+        const priceText =
+          typeof property.price === "number" ? property.price.toLocaleString() : (property.price || "-");
         const scoreValue =
-          property.score !== undefined ? property.score.toFixed(2) : "N/A";
+          typeof property.score === "number" ? property.score.toFixed(2) : "N/A";
+        const mainImage = property.mainImage || "assets/img/default.jpg";
 
-        const card = `
+        // Harita işaretleyicisi
+        if (property.lat && property.lng) {
+          L.marker([property.lat, property.lng])
+            .addTo(map)
+            .bindPopup(`<b>${title}</b><br>${locationText}<br>AED ${priceText}`);
+        }
+
+        return `
           <div class="col-md-6 wow fadeInUp">
             <div class="cs_card cs_style_1 cs_type_2 cs_white_bg cs_radius_15 position-relative">
-              <a href="property-details.html?id=${property._id}" aria-label="Click to visit property details" class="cs_card_thumbnail cs_radius_20">
-                <img src="${property.mainImage || "assets/img/default.jpg"}" alt="Card Image">
+              <a href="property-details.html?id=${id}" aria-label="Click to visit property details" class="cs_card_thumbnail cs_radius_20">
+                <img src="${mainImage}" alt="Card Image">
               </a>
               <div class="cs_card_content">
                 <div class="cs_card_text cs_mb_16">
                   <h3 class="cs_card_title cs_fs_28 cs_semibold cs_body_font cs_mb_10">
-                    <a href="property-details.html?id=${property._id}" aria-label="Click to view details">${property.title}</a>
+                    <a href="property-details.html?id=${id}" aria-label="Click to view details">${title}</a>
                     <div class="cs_score">${scoreValue}</div>
                   </h3>
                   <p class="cs_card_subtitle cs_fs_14 cs_mb_18">
-                    <i class="fa-solid fa-location-dot"></i> ${property.location}
+                    <i class="fa-solid fa-location-dot"></i> ${locationText}
                   </p>
                   <ul class="cs_card_features_list cs_mp_0">
-                    <li><span class="cs_accent_color"><i class="fa-solid fa-bed"></i></span> ${property.beds} BR</li>
-                    <li><span class="cs_accent_color"><i class="fa-solid fa-bath"></i></span> ${property.baths} baths</li>
-                    <li><span class="cs_accent_color"><i class="fa-solid fa-vector-square"></i></span> ${property.area} sqft</li>
+                    <li><span class="cs_accent_color"><i class="fa-solid fa-bed"></i></span> ${beds} BR</li>
+                    <li><span class="cs_accent_color"><i class="fa-solid fa-bath"></i></span> ${baths} baths</li>
+                    <li><span class="cs_accent_color"><i class="fa-solid fa-vector-square"></i></span> ${area} sqft</li>
                   </ul>
                 </div>
                 <div class="cs_card_btns_wrapper">
                   <div class="cs_card_price cs_radius_10">
-                    <h4 class="cs_card_price_for cs_fs_16 cs_normal cs_body_font mb-0">${property.status}</h4>
-                    <h3 class="cs_card_price_value cs_fs_24 cs_semibold cs_body_font mb-0">AED ${property.price.toLocaleString()}<small></small></h3>
+                    <h4 class="cs_card_price_for cs_fs_16 cs_normal cs_body_font mb-0">${status}</h4>
+                    <h3 class="cs_card_price_value cs_fs_24 cs_semibold cs_body_font mb-0">AED ${priceText}<small></small></h3>
                   </div>
-                  <a href="property-details.html?id=${property._id}" aria-label="Click to view details" class="cs_card_btn cs_center cs_accent_bg cs_white_color cs_radius_7">
+                  <a href="property-details.html?id=${id}" aria-label="Click to view details" class="cs_card_btn cs_center cs_accent_bg cs_white_color cs_radius_7">
                     <span><i class="fa-solid fa-arrow-right"></i></span>
                     <span><i class="fa-solid fa-arrow-right"></i></span>
                   </a>
@@ -1221,9 +1252,9 @@ document.addEventListener("DOMContentLoaded", function () {
             </div>
           </div>
         `;
+      }).join("");
 
-        container.innerHTML += card;
-      });
+      container.insertAdjacentHTML("beforeend", cardsHtml);
     })
     .catch((err) => console.error("API Hatası:", err));
 });
