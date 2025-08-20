@@ -1554,8 +1554,8 @@
 document.addEventListener("DOMContentLoaded", function () {
   const container = document.querySelector(".cs_grid_3.cs_products_view");
   const API_BASE = location.hostname.includes("localhost")
-  ? "http://localhost:3000"
-  : "https://newizz-proje.onrender.com";
+    ? "http://localhost:3000"
+    : "https://newizz-proje.onrender.com";
   let currentSort = null; // stores last selected sort
 
   // ✅ SCORE calculation
@@ -1579,7 +1579,6 @@ document.addEventListener("DOMContentLoaded", function () {
   // ✅ Sorting function
   function applySorting(data, sort) {
     if (!sort) return data;
-
     switch (sort) {
       case "newest":
         return data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -1659,14 +1658,55 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // ✅ Fetch properties
+  // ✅ Filter toplama (label üzerinden)
+  function getSelectedFilters() {
+    const filters = { type: [], status: [], location: [], bedrooms: [] };
+
+    document.querySelectorAll('.cs_filter_widget').forEach(widget => {
+      const title = widget.querySelector('h3')?.textContent.toLowerCase();
+
+      widget.querySelectorAll('input[type="checkbox"]:checked').forEach(el => {
+        const label = el.nextElementSibling?.textContent.trim();
+
+        if (title.includes("type")) {
+          filters.type.push(label);
+        }
+        if (title.includes("status")) {
+          if (label !== "All") filters.status.push(label);
+        }
+        if (title.includes("location")) {
+          filters.location.push(label);
+        }
+        if (title.includes("bedroom")) {
+          if (label === "More than 4") {
+            filters.bedrooms.push(5); // 5 ve üstü
+          } else {
+            filters.bedrooms.push(Number(label));
+          }
+        }
+      });
+    });
+
+    return filters;
+  }
+
+  // ✅ Fetch properties (with filtering + sorting)
   function fetchProperties(filters = {}, sort = null) {
     fetch(`${API_BASE}/api/properties`)
       .then(res => res.json())
       .then(data => {
-        if (sort) {
-          data = applySorting(data, sort);
+        // --- filtre uygula ---
+        if (filters.type.length > 0) data = data.filter(p => filters.type.includes(p.propertyType));
+        if (filters.status.length > 0) data = data.filter(p => filters.status.includes(p.status));
+        if (filters.location.length > 0) data = data.filter(p => filters.location.some(loc => p.location.includes(loc)));
+        if (filters.bedrooms.length > 0) {
+          data = data.filter(p => {
+            return filters.bedrooms.includes(Number(p.bedrooms)) ||
+                   (filters.bedrooms.includes(5) && p.bedrooms > 4);
+          });
         }
+
+        if (sort) data = applySorting(data, sort);
         renderProperties(data);
       })
       .catch(err => {
@@ -1675,11 +1715,19 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   }
 
+  // ✅ Event listeners for checkboxes
+  document.querySelectorAll('.cs_filter_widget input[type="checkbox"]').forEach(el => {
+    el.addEventListener("change", () => {
+      const filters = getSelectedFilters();
+      fetchProperties(filters, currentSort);
+    });
+  });
+
   // ✅ Event listeners for sorting dropdowns
   document.querySelectorAll("select.cs_custom_select").forEach(select => {
     select.addEventListener("change", (e) => {
       currentSort = e.target.value;
-      const filters = {}; // if you want to add checkboxes later
+      const filters = getSelectedFilters();
       fetchProperties(filters, currentSort);
     });
   });
@@ -1688,6 +1736,7 @@ document.addEventListener("DOMContentLoaded", function () {
   fetchProperties();
 });
 </script>
+
 
 
   </body>
