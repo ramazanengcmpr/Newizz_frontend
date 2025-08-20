@@ -946,8 +946,8 @@
                     <div class="cs_slider_wrapper">
                       <div class="cs_slide">
                         <div class="cs_card cs_style_1 cs_white_bg cs_radius_15 position-relative">
-                          <a href="property-details.html" aria-label="Click to view details" class="cs_card_thumbnail cs_radius_20">
-                          <img src="assets/img/card_img_1.jpg" alt="Card Image">
+                          <a href="property-details.html?id=${property._id}" aria-label="Click to view details" class="cs_card_thumbnail cs_radius_20">
+                          <img src="${property.mainImage}" alt="${property.title}">
                           </a>
                           <div class="cs_card_content">
                             <div class="cs_card_text cs_mb_16">
@@ -1415,66 +1415,155 @@
 
   <script>
 document.addEventListener("DOMContentLoaded", function () {
-  const container = document.getElementById("property-cards-container");
-  const API_BASE = "https://newizz-proje.onrender.com";
+  // ✅ Ortak API base
+  const API_BASE = location.hostname.includes("localhost") 
+    ? "http://localhost:3000" 
+    : "https://newizz-proje.onrender.com";
 
+  /* ---------------------------
+   * 1. Property Grid (Ana sayfa)
+   * --------------------------- */
+  const gridContainer = document.getElementById("property-cards-container");
+  if (gridContainer) {
+    fetch(`${API_BASE}/api/properties`)
+      .then(res => res.json())
+      .then(properties => {
+        gridContainer.innerHTML = "";
+        properties.forEach(property => {
+          const score = property.score ? property.score.toFixed(2) : "N/A";
+          const formattedPrice = Number(property.price || 0).toLocaleString("en-US");
 
-  fetch(`${API_BASE}/api/properties`)
-    .then(res => res.json())
-    .then(data => renderCards(data))
-    .catch(err => console.error("API Hatası:", err));
-
-  function renderCards(properties) {
-    container.innerHTML = ""; // Statikleri temizler
-
-    properties.forEach(property => {
-      const score = property.score ? property.score.toFixed(2) : "N/A";
-      const formattedPrice = Number(property.price || 0).toLocaleString("en-US");
-
-      const card = `
-      <div class="cs_grid_col wow fadeInUp" data-wow-delay="150ms">
-        <div class="cs_card cs_style_1 cs_type_2 cs_white_bg cs_radius_15 position-relative">
-          <a href="property-details.html?id=${property._id}" class="cs_card_thumbnail cs_radius_20">
-            <img src="${property.mainImage || "assets/img/card_img_23.jpg"}" alt="Card Image">
-          </a>
-          <div class="cs_card_content">
-            <div class="cs_card_text cs_mb_16">
-              <h3 class="cs_card_title cs_fs_28 cs_semibold cs_body_font cs_mb_10">
-                <a href="property-details.html?id=${property._id}">
-                  ${property.title || "Untitled"}
-                </a>
-                <div class="cs_score">${score}</div>
-              </h3>
-              <p class="cs_card_subtitle cs_fs_14 cs_mb_18">
-                <i class="fa-solid fa-location-dot"></i> ${property.location || "N/A"}
-              </p>
-              <ul class="cs_card_features_list cs_mp_0">
-                <li>🛏 ${property.beds || 0} BR</li>
-                <li>🛁 ${property.baths || 0} baths</li>
-                <li>📐 ${property.area || 0} sqft</li>
-              </ul>
-            </div>
-            <div class="cs_card_btns_wrapper">
-              <div class="cs_card_price cs_radius_10">
-                <h4 class="cs_card_price_for">${property.status || "N/A"}</h4>
-                <h3 class="cs_card_price_value">AED ${formattedPrice}</h3>
-              </div>
-              <a href="property-details.html?id=${property._id}" class="cs_card_btn cs_center cs_accent_bg cs_white_color cs_radius_7">
-                <span><i class="fa-solid fa-arrow-right"></i></span>
+          const card = `
+          <div class="cs_grid_col wow fadeInUp" data-wow-delay="150ms">
+            <div class="cs_card cs_style_1 cs_type_2 cs_white_bg cs_radius_15 position-relative">
+              <a href="property-details.html?id=${property._id}" class="cs_card_thumbnail cs_radius_20">
+                <img src="${property.mainImage || "assets/img/card_img_23.jpg"}" alt="Card Image">
               </a>
+              <div class="cs_card_content">
+                <div class="cs_card_text cs_mb_16">
+                  <h3 class="cs_card_title cs_fs_28 cs_semibold cs_body_font cs_mb_10">
+                    <a href="property-details.html?id=${property._id}">
+                      ${property.title || "Untitled"}
+                    </a>
+                    <div class="cs_score">${score}</div>
+                  </h3>
+                  <p class="cs_card_subtitle cs_fs_14 cs_mb_18">
+                    <i class="fa-solid fa-location-dot"></i> ${property.location || "N/A"}
+                  </p>
+                  <ul class="cs_card_features_list cs_mp_0">
+                    <li>🛏 ${property.beds || 0} BR</li>
+                    <li>🛁 ${property.baths || 0} baths</li>
+                    <li>📐 ${property.area || 0} sqft</li>
+                  </ul>
+                </div>
+                <div class="cs_card_btns_wrapper">
+                  <div class="cs_card_price cs_radius_10">
+                    <h4 class="cs_card_price_for">${property.status || "N/A"}</h4>
+                    <h3 class="cs_card_price_value">AED ${formattedPrice}</h3>
+                  </div>
+                  <a href="property-details.html?id=${property._id}" class="cs_card_btn cs_center cs_accent_bg cs_white_color cs_radius_7">
+                    <span><i class="fa-solid fa-arrow-right"></i></span>
+                  </a>
+                </div>
+              </div>
+              <button type="button" class="cs_heart_icon cs_center cs_white_bg cs_accent_color cs_radius_50 position-absolute">
+                <i class="fa-regular fa-heart"></i>
+              </button>
             </div>
-          </div>
-          <button type="button" class="cs_heart_icon cs_center cs_white_bg cs_accent_color cs_radius_50 position-absolute">
-            <i class="fa-regular fa-heart"></i>
-          </button>
-        </div>
-      </div>`;
+          </div>`;
+          gridContainer.insertAdjacentHTML("beforeend", card);
+        });
+      })
+      .catch(err => console.error("❌ Grid API Hatası:", err));
+  }
 
-      container.insertAdjacentHTML("beforeend", card);
-    });
+  /* ---------------------------
+   * 2. Property Details Page
+   * --------------------------- */
+  async function loadPropertyDetails() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const propertyId = urlParams.get("id");
+
+    if (!propertyId) {
+      console.error("❌ Property ID bulunamadı!");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE}/api/properties/${propertyId}`);
+      const property = await response.json();
+
+      document.getElementById("property-id").innerText = property._id || "";
+      document.getElementById("property-details-bedrooms").innerText = property.bedrooms || "N/A";
+      document.getElementById("property-bathrooms").innerText = property.bathrooms || "N/A";
+      document.getElementById("property-details-size").innerText = property.size ? property.size + " sqft" : "N/A";
+      document.getElementById("property-details-price").innerText = property.price ? "AED " + property.price.toLocaleString() : "N/A";
+      document.getElementById("property-details-type").innerText = property.propertyType || "N/A";
+      document.getElementById("property-details-status").innerText = property.status || "N/A";
+      document.getElementById("property-year-built").innerText = property.yearBuilt || "N/A";
+
+      const featuresList = document.getElementById("property-features-list");
+      if (featuresList) {
+        featuresList.innerHTML = "";
+        (property.features || []).forEach(f => {
+          const li = document.createElement("li");
+          li.textContent = f;
+          featuresList.appendChild(li);
+        });
+      }
+
+      if (property.images && property.images.length > 0) {
+        document.querySelector(".cs_single_property_details img").src = property.images[0];
+      }
+    } catch (err) {
+      console.error("❌ Details API Hatası:", err);
+    }
+  }
+  if (document.getElementById("property-details-price")) {
+    loadPropertyDetails();
+  }
+
+  /* ---------------------------
+   * 3. Similar Listings Slider
+   * --------------------------- */
+  const sliderContainer = document.querySelector(".cs_slider_wrapper");
+  if (sliderContainer) {
+    fetch(`${API_BASE}/api/properties`)
+      .then(res => res.json())
+      .then(data => {
+        sliderContainer.innerHTML = "";
+        data.forEach(property => {
+          const card = `
+          <div class="cs_slide">
+            <div class="cs_card cs_style_1 cs_white_bg cs_radius_15 position-relative">
+              <a href="property-details.html?id=${property._id}" aria-label="Click to view details" class="cs_card_thumbnail cs_radius_20">
+                <img src="${property.mainImage || "assets/img/card_img_23.jpg"}" alt="${property.title}">
+              </a>
+              <div class="cs_card_content">
+                <div class="cs_card_text cs_mb_16">
+                  <h3 class="cs_card_title cs_fs_28 cs_semibold cs_body_font cs_mb_10">
+                    <a href="property-details.html?id=${property._id}" aria-label="Click to view details">${property.title}</a>
+                  </h3>
+                  <p class="cs_card_subtitle cs_fs_14 cs_mb_18">
+                    <i class="fa-solid fa-location-dot"></i> ${property.location || "N/A"}
+                  </p>
+                  <ul class="cs_card_features_list cs_mp_0">
+                    <li>🛏 ${property.bedrooms || 0} BR</li>
+                    <li>🛁 ${property.bathrooms || 0} baths</li>
+                    <li>📐 ${property.size || 0} sqft</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>`;
+          sliderContainer.insertAdjacentHTML("beforeend", card);
+        });
+      })
+      .catch(err => console.error("❌ Slider API Hatası:", err));
   }
 });
 </script>
+
 
   </body>
 </html>
