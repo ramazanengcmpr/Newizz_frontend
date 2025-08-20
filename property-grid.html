@@ -1672,11 +1672,14 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // ✅ Fetch properties (with filtering + sorting)
-  function fetchProperties(filters = {}, sort = null) {
+  function fetchProperties(
+    filters = { type: [], status: [], location: [], bedrooms: [] },
+    sort = null
+  ) {
     fetch(`${API_BASE}/api/properties`)
       .then(res => res.json())
       .then(data => {
-        console.log("API’den gelen veri:", data);  // 🔍 Debug için
+        console.log("API’den gelen veri:", data);
 
         if (!Array.isArray(data)) {
           console.warn("API unexpected response:", data);
@@ -1684,10 +1687,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         // apply filters (safe check)
-        if (filters.type.length > 0) data = data.filter(p => filters.type.includes(p.propertyType || p.type));
-        if (filters.status.length > 0) data = data.filter(p => filters.status.includes(p.status || ""));
-        if (filters.location.length > 0) data = data.filter(p => filters.location.some(loc => (p.location || "").includes(loc)));
-        if (filters.bedrooms.length > 0) {
+        if (filters.type?.length > 0) data = data.filter(p => filters.type.includes(p.propertyType || p.type));
+        if (filters.status?.length > 0) data = data.filter(p => filters.status.includes(p.status || ""));
+        if (filters.location?.length > 0) data = data.filter(p => filters.location.some(loc => (p.location || "").includes(loc)));
+        if (filters.bedrooms?.length > 0) {
           data = data.filter(p => {
             const br = Number(p.bedrooms || 0);
             return filters.bedrooms.includes(br) || (filters.bedrooms.includes(5) && br > 4);
