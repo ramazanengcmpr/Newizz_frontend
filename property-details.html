@@ -213,7 +213,7 @@
     <section class="cs_light_gray_bg">
       <div class="cs_height_22 cs_height_lg_22"></div>
       <div class="container">
-        <div class="row cs_gap_y_40">
+        <div class="row cs_gap_y_40" id="property-cards-container">
           <div class="col-xl-8 col-lg-7 wow fadeInLeft">
             <div class="cs_single_property_content_wrapper cs_white_bg cs_radius_15">
               <div class="cs_single_property_text_wrapper">
@@ -307,56 +307,55 @@
                   <div class="col-md-6">
                     <div class="cs_property_details_box">
                       <span class="cs_property_label cs_semibold">Property ID:</span>
-                      <div class="cs_property_text">RH09876</div>
+                      <div class="cs_property_text" id="property-id">-</div>
                     </div>
                   </div>
                   <div class="col-md-6">
                     <div class="cs_property_details_box">
                       <span class="cs_property_label cs_semibold">Bathrooms:</span>
-                      <div class="cs_property_text">2</div>
+                      <div class="cs_property_text">id="property-bathrooms">-</div>
                     </div>
                   </div>
                   <div class="col-md-6">
                     <div class="cs_property_details_box">
                       <span class="cs_property_label cs_semibold">Price:</span>
-                      <div class="cs_property_text">AED 985,000</div>
+                      <div class="cs_property_text"id="property-details-price">-</div>
                     </div>
                   </div>
                   <div class="col-md-6">
                     <div class="cs_property_details_box">
                       <span class="cs_property_label cs_semibold">Property Size:</span>
-                      <div class="cs_property_text">1567 sqft</div>
+                      <div class="cs_property_text"id="property-details-size">-</div>
                     </div>
                   </div>
                   <div class="col-md-6">
                     <div class="cs_property_details_box">
                       <span class="cs_property_label cs_semibold">Year Built:</span>
-                      <div class="cs_property_text">1989</div>
+                      <div class="cs_property_text" id="property-year-built">-</div>
                     </div>
                   </div>
                   <div class="col-md-6">
                     <div class="cs_property_details_box">
                       <span class="cs_property_label cs_semibold">Property Type:</span>
-                      <div class="cs_property_text">House</div>
+                      <div class="cs_property_text" id="property-details-type">-</div>
                     </div>
                   </div>
                   <div class="col-md-6">
                     <div class="cs_property_details_box">
                       <span class="cs_property_label cs_semibold">Bedrooms:</span>
-                      <div class="cs_property_text">3</div>
+                      <div class="cs_property_text">id="property-details-bedrooms">-</div>
                     </div>
                   </div>
                   <div class="col-md-6">
                     <div class="cs_property_details_box">
                       <span class="cs_property_label cs_semibold">Property Status:</span>
-                      <div class="cs_property_text">Ready</div>
-                    </div>
+                      <div class="cs_property_text"> id="property-details-status">-</div>
                   </div>
                 </div>
               </div>
               <div class="cs_single_property_features">
                 <h3 class="cs_fs_24 cs_semibold cs_body_font cs_mb_17">Property Features</h3>
-                <ul class="cs_features_list cs_mp_0">
+                <ul class="cs_features_list cs_mp_0"id="property-features-list"></ul>
                   <li>
                     <span class="cs_featur_icon cs_center cs_accent_color position-relative cs_radius_50">
                       <svg width="14" height="11" viewBox="0 0 14 11" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1414,131 +1413,65 @@
     <script src="assets/js/wow.min.js"></script>
     <script src="assets/js/main.js"></script>
 
-    <script>
+  <script>
 document.addEventListener("DOMContentLoaded", function () {
-    const urlParams = new URLSearchParams(window.location.search);
-    const propertyId = urlParams.get("id");
+  const container = document.getElementById("property-cards-container");
+  const API_BASE = "https://newizz-backend.onrender.com";
 
-    const API_BASE = "https://newizz-backend.onrender.com"; // 🔗 Backend linkin
+  fetch(`${API_BASE}/api/properties`)
+    .then(res => res.json())
+    .then(data => renderCards(data))
+    .catch(err => console.error("API Hatası:", err));
 
-    if (!propertyId) {
-        console.warn("Property ID yok, dummy veri yükleniyor.");
-        loadDummyData();
-        return;
-    }
+  function renderCards(properties) {
+    container.innerHTML = ""; // Statikleri temizler
 
-    fetch(`${API_BASE}/api/properties/${propertyId}`)
-        .then(response => {
-            if (!response.ok) throw new Error("API'den veri alınamadı");
-            return response.json();
-        })
-        .then(property => fillPropertyData(property))
-        .catch(error => {
-            console.error("Veri yüklenirken hata oluştu:", error);
-            loadDummyData();
-        });
+    properties.forEach(property => {
+      const score = property.score ? property.score.toFixed(2) : "N/A";
+      const formattedPrice = Number(property.price || 0).toLocaleString("en-US");
 
-    // --- Sayfayı dolduran ana fonksiyon ---
-    function fillPropertyData(property) {
-        // === ÜST KISIM ===
-        document.getElementById("property-title").textContent = property.title || "No Title";
-        document.getElementById("property-location").textContent = property.location || "Unknown Location";
-        document.getElementById("property-price").textContent = `AED ${property.price?.toLocaleString() || "0"}`;
-        document.getElementById("property-bedrooms").textContent = property.beds || "-";
-        document.getElementById("property-bathrooms").textContent = property.baths || "-";
-        document.getElementById("property-area").textContent = property.area ? `${property.area} sqft` : "-";
+      const card = `
+      <div class="cs_grid_col wow fadeInUp" data-wow-delay="150ms">
+        <div class="cs_card cs_style_1 cs_type_2 cs_white_bg cs_radius_15 position-relative">
+          <a href="property-details.html?id=${property._id}" class="cs_card_thumbnail cs_radius_20">
+            <img src="${property.mainImage || "assets/img/card_img_23.jpg"}" alt="Card Image">
+          </a>
+          <div class="cs_card_content">
+            <div class="cs_card_text cs_mb_16">
+              <h3 class="cs_card_title cs_fs_28 cs_semibold cs_body_font cs_mb_10">
+                <a href="property-details.html?id=${property._id}">
+                  ${property.title || "Untitled"}
+                </a>
+                <div class="cs_score">${score}</div>
+              </h3>
+              <p class="cs_card_subtitle cs_fs_14 cs_mb_18">
+                <i class="fa-solid fa-location-dot"></i> ${property.location || "N/A"}
+              </p>
+              <ul class="cs_card_features_list cs_mp_0">
+                <li>🛏 ${property.beds || 0} BR</li>
+                <li>🛁 ${property.baths || 0} baths</li>
+                <li>📐 ${property.area || 0} sqft</li>
+              </ul>
+            </div>
+            <div class="cs_card_btns_wrapper">
+              <div class="cs_card_price cs_radius_10">
+                <h4 class="cs_card_price_for">${property.status || "N/A"}</h4>
+                <h3 class="cs_card_price_value">AED ${formattedPrice}</h3>
+              </div>
+              <a href="property-details.html?id=${property._id}" class="cs_card_btn cs_center cs_accent_bg cs_white_color cs_radius_7">
+                <span><i class="fa-solid fa-arrow-right"></i></span>
+              </a>
+            </div>
+          </div>
+          <button type="button" class="cs_heart_icon cs_center cs_white_bg cs_accent_color cs_radius_50 position-absolute">
+            <i class="fa-regular fa-heart"></i>
+          </button>
+        </div>
+      </div>`;
 
-        // Property details
-        document.getElementById("property-id").textContent = property._id || "N/A";
-        document.getElementById("property-details-price").textContent = `AED ${property.price?.toLocaleString() || "0"}`;
-        document.getElementById("property-details-size").textContent = property.area ? `${property.area} sqft` : "-";
-        document.getElementById("property-year-built").textContent = property.year_built || "N/A";
-        document.getElementById("property-details-type").textContent = property.type || "N/A";
-        document.getElementById("property-details-bedrooms").textContent = property.beds || "-";
-        document.getElementById("property-details-status").textContent = property.status || "N/A";
-
-        // Ana görsel
-        document.getElementById("main-image").src = property.image || 'assets/img/default.jpg';
-
-        // Galeri
-        if (property.gallery?.length) {
-            property.gallery.forEach((imgUrl, index) => {
-                const imgElement = document.getElementById(`gallery-image-${index+1}`);
-                if (imgElement) imgElement.src = imgUrl;
-            });
-        }
-
-        // Özellikler (ikonlu özellik listesi)
-        const featuresList = document.getElementById("property-features-list");
-        if (featuresList && property.features) {
-            const featuresArr = property.features.split(",");
-            const lis = featuresList.querySelectorAll("li");
-            if (lis[0]) lis[0].lastChild.textContent = ` ${property.beds} BR`;
-            if (lis[1]) lis[1].lastChild.textContent = ` ${property.baths} baths`;
-            if (lis[2]) lis[2].lastChild.textContent = ` ${property.area} sqft`;
-        }
-
-        // === ALT KISIM ===
-        // Description
-        const descriptionElement = document.querySelector(".cs_single_property_text p");
-        if (descriptionElement) {
-            descriptionElement.textContent = property.description || "No description available.";
-        }
-
-        // Documents
-        const documentsContainer = document.querySelector(".cs_property_documents");
-        if (documentsContainer) {
-            documentsContainer.innerHTML = "";
-            if (property.documents?.length) {
-                property.documents.forEach(doc => {
-                    documentsContainer.innerHTML += `<a href="${doc.url}" target="_blank">${doc.name}</a>`;
-                });
-            }
-        }
-
-        // Location Details
-        document.querySelector('[data-field="address"]').textContent = property.address || "-";
-        document.querySelector('[data-field="state"]').textContent = property.state || "-";
-        document.querySelector('[data-field="city"]').textContent = property.city || "-";
-        document.querySelector('[data-field="zip"]').textContent = property.zip || "-";
-        document.querySelector('[data-field="area-name"]').textContent = property.area_name || "-";
-        document.querySelector('[data-field="country"]').textContent = property.country || "-";
-    }
-
-    // --- Dummy veri ---
-    function loadDummyData() {
-        const dummyProperty = {
-            _id: "123456",
-            title: "Luxury Villa - Dubai Marina",
-            location: "Dubai Marina, Dubai, UAE",
-            price: 2500000,
-            beds: 4,
-            baths: 3,
-            area: 450,
-            year_built: 2022,
-            type: "Villa",
-            status: "Ready",
-            image: "assets/img/property_img_1.jpg",
-            features: "Swimming Pool,Garden,Garage,Sea View",
-            gallery: [
-                "assets/img/property_img_1.jpg",
-                "assets/img/property_img_2.jpg",
-                "assets/img/property_img_3.jpg"
-            ],
-            description: "Lüks villa, Dubai Marina'da muhteşem deniz manzarası ile...",
-            documents: [
-                { name: "propertydetails.pdf", url: "assets/docs/propertydetails.pdf" },
-                { name: "floorplandetails.pdf", url: "assets/docs/floorplandetails.pdf" }
-            ],
-            address: "123 West Road",
-            state: "New York",
-            city: "Brooklyn",
-            zip: "12345",
-            area_name: "Brook Hill",
-            country: "United States"
-        };
-        fillPropertyData(dummyProperty);
-    }
+      container.insertAdjacentHTML("beforeend", card);
+    });
+  }
 });
 </script>
 
