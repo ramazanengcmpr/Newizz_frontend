@@ -1,7 +1,7 @@
 // Newizz Admin Panel JavaScript
 class AdminPanel {
     constructor() {
-        this.apiBase = 'http://localhost:3000/api';
+        this.apiBase = 'https://newizz-proje.onrender.com/api';
         this.currentSection = 'dashboard';
         this.init();
     }

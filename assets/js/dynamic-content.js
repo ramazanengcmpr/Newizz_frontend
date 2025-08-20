@@ -1,7 +1,7 @@
 // Newizz Dinamik İçerik Yükleyici
 class NewizzDynamicContent {
   constructor() {
-    this.apiBase = 'http://localhost:3000/api';
+    this.apiBase = 'https://newizz-proje.onrender.com/api';
     this.currentPropertyId = this.getPropertyIdFromUrl();
   }
 

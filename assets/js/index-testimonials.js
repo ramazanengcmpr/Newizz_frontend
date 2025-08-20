@@ -1,7 +1,7 @@
 // Index.html Testimonials Dinamik Yükleme
 class IndexTestimonials {
     constructor() {
-        this.apiBase = 'http://localhost:3000/api';
+        this.apiBase = 'https://newizz-proje.onrender.com/api';
         this.init();
     }
 

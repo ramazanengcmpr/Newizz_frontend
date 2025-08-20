@@ -3,7 +3,7 @@ console.log('Property Details JS yüklendi!');
 
 class PropertyDetails {
     constructor() {
-        this.apiBase = 'http://localhost:3000/api';
+        this.apiBase = 'https://newizz-proje.onrender.com/api';
         this.propertyId = this.getPropertyIdFromUrl();
         this.init();
     }
