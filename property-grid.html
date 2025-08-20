@@ -1584,11 +1584,11 @@ document.addEventListener("DOMContentLoaded", function () {
       case "old": return data.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
       case "popular": return data.sort((a, b) => (b.views || 0) - (a.views || 0));
       case "modern": return data.sort((a, b) => (b.yearBuilt || 0) - (a.yearBuilt || 0));
-      case "low-price": return data.sort((a, b) => a.price - b.price);
-      case "high-price": return data.sort((a, b) => b.price - a.price);
+      case "low-price": return data.sort((a, b) => (a.price || 0) - (b.price || 0));
+      case "high-price": return data.sort((a, b) => (b.price || 0) - (a.price || 0));
       case "rating": return data.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-      case "high-score": return data.sort((a, b) => b.score - a.score);
-      case "low-score": return data.sort((a, b) => a.score - b.score);
+      case "high-score": return data.sort((a, b) => (b.score || 0) - (a.score || 0));
+      case "low-score": return data.sort((a, b) => (a.score || 0) - (b.score || 0));
       default: return data;
     }
   }
@@ -1620,16 +1620,16 @@ document.addEventListener("DOMContentLoaded", function () {
             <div class="cs_card_content">
               <div class="cs_card_text cs_mb_16">
                 <h3 class="cs_card_title cs_fs_28 cs_semibold cs_body_font cs_mb_10">
-                  <a href="property-details.html?id=${property._id}">${property.title}</a>
+                  <a href="property-details.html?id=${property._id}">${property.title || "Untitled"}</a>
                   <div class="cs_score">${scoreDisplay}</div>
                 </h3>
                 <p class="cs_card_subtitle cs_fs_14 cs_mb_18">
-                  <i class="fa-solid fa-location-dot"></i>${property.location}
+                  <i class="fa-solid fa-location-dot"></i>${property.location || "N/A"}
                 </p>
                 <ul class="cs_card_features_list cs_mp_0">
-                  <li>🛏 ${property.bedrooms} BR</li>
-                  <li>🛁 ${property.bathrooms} baths</li>
-                  <li>📐 ${property.size} sqft</li>
+                  <li>🛏 ${property.bedrooms || 0} BR</li>
+                  <li>🛁 ${property.bathrooms || 0} baths</li>
+                  <li>📐 ${property.size || 0} sqft</li>
                 </ul>
               </div>
               <div class="cs_card_btns_wrapper">
@@ -1676,17 +1676,22 @@ document.addEventListener("DOMContentLoaded", function () {
     fetch(`${API_BASE}/api/properties`)
       .then(res => res.json())
       .then(data => {
+        console.log("API’den gelen veri:", data);  // 🔍 Debug için
+
         if (!Array.isArray(data)) {
           console.warn("API unexpected response:", data);
           data = [];
         }
 
-        // apply filters
-        if (filters.type.length > 0) data = data.filter(p => filters.type.includes(p.propertyType));
-        if (filters.status.length > 0) data = data.filter(p => filters.status.includes(p.status));
-        if (filters.location.length > 0) data = data.filter(p => filters.location.some(loc => p.location?.includes(loc)));
+        // apply filters (safe check)
+        if (filters.type.length > 0) data = data.filter(p => filters.type.includes(p.propertyType || p.type));
+        if (filters.status.length > 0) data = data.filter(p => filters.status.includes(p.status || ""));
+        if (filters.location.length > 0) data = data.filter(p => filters.location.some(loc => (p.location || "").includes(loc)));
         if (filters.bedrooms.length > 0) {
-          data = data.filter(p => filters.bedrooms.includes(Number(p.bedrooms)) || (filters.bedrooms.includes(5) && p.bedrooms > 4));
+          data = data.filter(p => {
+            const br = Number(p.bedrooms || 0);
+            return filters.bedrooms.includes(br) || (filters.bedrooms.includes(5) && br > 4);
+          });
         }
 
         if (sort) data = applySorting(data, sort);
@@ -1698,7 +1703,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   }
 
-  // ✅ Event listeners for checkboxes
+  // ✅ Event listeners
   document.querySelectorAll('.cs_filter_widget input[type="checkbox"]').forEach(el => {
     el.addEventListener("change", () => {
       const filters = getSelectedFilters();
@@ -1706,7 +1711,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // ✅ Event listeners for sorting dropdowns
   document.querySelectorAll("select.cs_custom_select").forEach(select => {
     select.addEventListener("change", (e) => {
       currentSort = e.target.value;
@@ -1719,7 +1723,6 @@ document.addEventListener("DOMContentLoaded", function () {
   fetchProperties();
 });
 </script>
-
 
   </body>
 </html>
