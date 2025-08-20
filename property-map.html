@@ -1166,42 +1166,69 @@
     <script src="assets/js/wow.min.js"></script>
     <script src="assets/js/main.js"></script>
    
-    <script>
+ <script>
 document.addEventListener("DOMContentLoaded", function () {
-   const API_BASE = location.hostname.includes("localhost")
-  ? "http://localhost:3000"
-  : "https://newizz-proje.onrender.com";
+  const container = document.querySelector(".row.cs_row_gap_20"); // Kartların olduğu satır
+  const API_BASE = location.hostname.includes("localhost")
+    ? "http://localhost:3000"
+    : "https://newizz-proje.onrender.com";
 
-    // Harita başlat
-    const map = L.map("map").setView([25.276987, 55.296249], 11); // Dubai merkezi
+  // Verileri çek
+  fetch(`${API_BASE}/api/properties`)
+    .then((res) => res.json())
+    .then((properties) => {
+      container.innerHTML = ""; // Statik kartları temizle
 
-    // OpenStreetMap tile
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
+      properties.forEach((property) => {
+        const scoreValue =
+          property.score !== undefined ? property.score.toFixed(2) : "N/A";
 
-    // API'den property verilerini çek
-    fetch(`${API_BASE}/api/properties`)
-        .then(response => response.json())
-        .then(data => {
-            data.forEach(property => {
-                // Koordinatlar varsa marker ekle
-                if (property.latitude && property.longitude) {
-                    L.marker([property.latitude, property.longitude])
-                        .addTo(map)
-                        .bindPopup(`
-                            <strong>${property.title}</strong><br>
-                            ${property.location}<br>
-                            AED ${property.price?.toLocaleString()}
-                        `);
-                }
-            });
-        })
-        .catch(error => {
-            console.error("Harita verisi yüklenemedi:", error);
-        });
+        const card = `
+          <div class="col-md-6 wow fadeInUp">
+            <div class="cs_card cs_style_1 cs_type_2 cs_white_bg cs_radius_15 position-relative">
+              <a href="property-details.html?id=${property._id}" aria-label="Click to visit property details" class="cs_card_thumbnail cs_radius_20">
+                <img src="${property.mainImage || "assets/img/default.jpg"}" alt="Card Image">
+              </a>
+              <div class="cs_card_content">
+                <div class="cs_card_text cs_mb_16">
+                  <h3 class="cs_card_title cs_fs_28 cs_semibold cs_body_font cs_mb_10">
+                    <a href="property-details.html?id=${property._id}" aria-label="Click to view details">${property.title}</a>
+                    <div class="cs_score">${scoreValue}</div>
+                  </h3>
+                  <p class="cs_card_subtitle cs_fs_14 cs_mb_18">
+                    <i class="fa-solid fa-location-dot"></i> ${property.location}
+                  </p>
+                  <ul class="cs_card_features_list cs_mp_0">
+                    <li><span class="cs_accent_color"><i class="fa-solid fa-bed"></i></span> ${property.beds} BR</li>
+                    <li><span class="cs_accent_color"><i class="fa-solid fa-bath"></i></span> ${property.baths} baths</li>
+                    <li><span class="cs_accent_color"><i class="fa-solid fa-vector-square"></i></span> ${property.area} sqft</li>
+                  </ul>
+                </div>
+                <div class="cs_card_btns_wrapper">
+                  <div class="cs_card_price cs_radius_10">
+                    <h4 class="cs_card_price_for cs_fs_16 cs_normal cs_body_font mb-0">${property.status}</h4>
+                    <h3 class="cs_card_price_value cs_fs_24 cs_semibold cs_body_font mb-0">AED ${property.price.toLocaleString()}<small></small></h3>
+                  </div>
+                  <a href="property-details.html?id=${property._id}" aria-label="Click to view details" class="cs_card_btn cs_center cs_accent_bg cs_white_color cs_radius_7">
+                    <span><i class="fa-solid fa-arrow-right"></i></span>
+                    <span><i class="fa-solid fa-arrow-right"></i></span>
+                  </a>
+                </div>
+              </div>
+              <button type="button" aria-label="Heart button" class="cs_heart_icon cs_center cs_white_bg cs_accent_color cs_radius_50 position-absolute">
+                <i class="fa-regular fa-heart"></i>
+              </button>
+            </div>
+          </div>
+        `;
+
+        container.innerHTML += card;
+      });
+    })
+    .catch((err) => console.error("API Hatası:", err));
 });
 </script>
+
 
   </body>
 </html>
