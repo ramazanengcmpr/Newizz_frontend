@@ -403,5 +403,105 @@
     <script src="assets/js/odometer.js"></script>
     <script src="assets/js/wow.min.js"></script>
     <script src="assets/js/main.js"></script>
+
+  <script>
+(function () {
+   const container = document.querySelector(".cs_grid_3.cs_products_view");
+   const API_BASE = location.hostname.includes("localhost")
+    ? "http://localhost:3000"
+    : "https://newizz-proje.onrender.com";
+  let currentSort = null;
+
+})();
+
+document.addEventListener("DOMContentLoaded", function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const propertyId = urlParams.get("id");
+    if (!propertyId) {
+        alert("Property ID not found in URL");
+        return;
+    }
+
+    // 1️⃣ Veriyi çekip formu doldurma
+    fetch(`${API_BASE}/properties/${propertyId}`)
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("propertytitle").value = data.title || "";
+            document.getElementById("status").value = data.status || "";
+            document.getElementById("type").value = data.type || "";
+            document.getElementById("price").value = data.price || "";
+            document.getElementById("area").value = data.area || "";
+            document.getElementById("rooms").value = data.rooms || "";
+            document.getElementById("address").value = data.location || "";
+            document.getElementById("city").value = data.city || "";
+            document.getElementById("state").value = data.state || "";
+            document.getElementById("zipcode").value = data.zipcode || "";
+            document.getElementById("summary").value = data.description || "";
+            document.getElementById("builtin").value = data.built_in || "";
+            document.getElementById("bedrooms").value = data.beds || "";
+            document.getElementById("bathrooms").value = data.baths || "";
+            document.getElementById("contactname").value = data.contact_name || "";
+            document.getElementById("contactemail").value = data.contact_email || "";
+            document.getElementById("contactphone").value = data.contact_phone || "";
+
+            // Checkbox özellikler
+            if (data.features) {
+                let featureArray = [];
+                if (typeof data.features === "string") {
+                    featureArray = data.features.split(",").map(f => f.trim().toLowerCase());
+                } else if (Array.isArray(data.features)) {
+                    featureArray = data.features.map(f => f.toLowerCase());
+                }
+                featureArray.forEach(feature => {
+                    document.querySelectorAll('input[name="check"]').forEach(cb => {
+                        if (cb.nextElementSibling.textContent.trim().toLowerCase() === feature) {
+                            cb.checked = true;
+                        }
+                    });
+                });
+            }
+        })
+        .catch(err => console.error("Error fetching property:", err));
+
+    // 2️⃣ Güncelleme gönderme
+    document.querySelector(".cs_add_property_form").addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const updatedData = {
+            title: document.getElementById("propertytitle").value,
+            status: document.getElementById("status").value,
+            type: document.getElementById("type").value,
+            price: document.getElementById("price").value,
+            area: document.getElementById("area").value,
+            rooms: document.getElementById("rooms").value,
+            location: document.getElementById("address").value,
+            city: document.getElementById("city").value,
+            state: document.getElementById("state").value,
+            zipcode: document.getElementById("zipcode").value,
+            description: document.getElementById("summary").value,
+            built_in: document.getElementById("builtin").value,
+            beds: document.getElementById("bedrooms").value,
+            baths: document.getElementById("bathrooms").value,
+            contact_name: document.getElementById("contactname").value,
+            contact_email: document.getElementById("contactemail").value,
+            contact_phone: document.getElementById("contactphone").value,
+            features: Array.from(document.querySelectorAll('input[name="check"]:checked')).map(cb => cb.nextElementSibling.textContent.trim())
+        };
+
+        fetch(`${API_BASE}/properties/${propertyId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updatedData)
+        })
+        .then(res => res.json())
+        .then(data => {
+            alert("Property updated successfully!");
+            window.location.href = `property-details.html?id=${propertyId}`;
+        })
+        .catch(err => console.error("Error updating property:", err));
+    });
+});
+</script>
+
   </body>
 </html>

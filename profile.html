@@ -99,124 +99,194 @@
       </div>
     </section>
     <!-- End Page Header Section -->
-    <!-- Start Profile Setting -->
-    <section class="cs_tabs cs_light_gray_bg">
-      <div class="cs_height_130 cs_height_lg_80"></div>
-      <div class="container">
-        <div class="cs_profile_wrapper">
-          <div class="row cs_gap_y_30">
-            <div class="col-lg-3">
-              <div class="cs_profile_menu cs_white_bg cs_radius_10">
-                <div class="cs_center_column text-center cs_mb_40 cs_mb_lg_30">
-                  <div class="cs_profile_thumbnail cs_radius_50 cs_mb_20">
-                    <img src="assets/img/team_1.jpg" alt="Profile Pic">
+   <!-- Start Profile Setting -->
+<section class="cs_tabs cs_light_gray_bg">
+  <div class="cs_height_130 cs_height_lg_80"></div>
+  <div class="container">
+    <div class="cs_profile_wrapper">
+      <div class="row cs_gap_y_30">
+        <div class="col-lg-3">
+          <div class="cs_profile_menu cs_white_bg cs_radius_10">
+            <div class="cs_center_column text-center cs_mb_40 cs_mb_lg_30">
+              <div class="cs_profile_thumbnail cs_radius_50 cs_mb_20">
+                <img id="profile-image" src="assets/img/team_1.jpg" alt="Profile Pic">
+              </div>
+              <h2 id="profile-name" class="cs_profile_title cs_fs_24 cs_semibold mb-0">Amanda Jones</h2>
+            </div>
+            <ul class="cs_tab_links cs_style_5 cs_mp_0">
+              <li><a href="#profile" aria-label="Tab button">Profile</a></li>
+              <li><a href="#dashboard" aria-label="Tab button">Dashboard</a></li>
+              <li><a href="#property" aria-label="Tab button">My Property</a></li>
+              <li class="active"><a href="#add_property" aria-label="Tab button">Add New Property</a></li>
+              <li><a href="#favourite_property" aria-label="Tab button">Favourite Property</a></li>
+              <li><a href="#password_update" aria-label="Tab button">Change Password</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-lg-9">
+          <div class="cs_tab_body">
+            <div class="cs_tab" id="profile">
+              <div class="cs_profile cs_white_bg cs_radius_10">
+                <h2 class="cs_profile_title cs_fs_28 cs_semibold cs_mb_40">My Profile</h2>
+                <div class="cs_avatar cs_style_2 cs_mb_40">
+                  <div class="cs_avatar_icon cs_center cs_radius_50 position-relative">
+                    <img id="avatar-image" src="assets/img/team_1.jpg" alt="Profile Pic">
+                    <span class="cs_thumb_edit cs_center cs_radius_50 position-absolute">
+                      <i class="fa-regular fa-pen-to-square"></i>
+                    </span>
                   </div>
-                  <h2 class="cs_profile_title cs_fs_24 cs_semibold mb-0">Amanda Jones</h2>
+                  <div class="cs_avatar_info">
+                    <h2 id="avatar-name" class="cs_fs_24 cs_medium cs_mb_10">Amanda Jones</h2>
+                    <p id="avatar-role" class="cs_profile_subtitle mb-0">Property Owner</p>
+                  </div>
                 </div>
-                <ul class="cs_tab_links cs_style_5 cs_mp_0">
-                  <li><a href="#profile" aria-label="Tab button">Profile</a></li>
-                  <li><a href="#dashboard" aria-label="Tab button">Dashboard</a></li>
-                  <li><a href="#property" aria-label="Tab button">My Property</a></li>
-                  <li class="active"><a href="#add_property" aria-label="Tab button">Add New Property</a></li>
-                  <li><a href="#favourite_property" aria-label="Tab button">Favourite Property</a></li>
-                  <li><a href="#password_update" aria-label="Tab button">Change Password</a></li>
-                </ul>
+                <form class="row cs_profile_form cs_row_gap_40 cs_gap_y_20">
+                  <div class="col-sm-6">
+                    <label for="fname">First Name</label>
+                    <input type="text" name="fname" class="cs_form_field cs_radius_7" id="fname">
+                  </div>
+                  <div class="col-sm-6">
+                    <label for="lname">Last Name</label>
+                    <input type="text" name="lname" class="cs_form_field cs_radius_7" id="lname">
+                  </div>
+                  <div class="col-sm-6">
+                    <label for="email">Email</label>
+                    <input type="email" name="email" class="cs_form_field cs_radius_7" id="email">
+                  </div>
+                  <div class="col-sm-6">
+                    <label for="phone">Phone</label>
+                    <input type="number" name="phone" class="cs_form_field cs_radius_7" id="phone">
+                  </div>
+                  <div class="col-lg-12">
+                    <label for="bio">Bio Summary</label>
+                    <textarea name="bio" id="bio" rows="5" class="cs_form_field cs_radius_7"></textarea>
+                  </div>
+                  <div class="col-lg-12">
+                    <button type="submit" aria-label="Submit button" class="cs_btn cs_style_1 cs_accent_bg cs_white_color cs_medium cs_radius_7">
+                      <span>Update Profile</span>
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
-            <div class="col-lg-9">
-              <div class="cs_tab_body">
-                <div class="cs_tab" id="profile">
-                  <div class="cs_profile cs_white_bg cs_radius_10">
-                    <h2 class="cs_profile_title cs_fs_28 cs_semibold cs_mb_40">My Profile</h2>
-                    <div class="cs_avatar cs_style_2 cs_mb_40">
-                      <div class="cs_avatar_icon cs_center cs_radius_50 position-relative">
-                        <img src="assets/img/team_1.jpg" alt="Profile Pic">
-                        <span class="cs_thumb_edit cs_center cs_radius_50 position-absolute">
-                        <i class="fa-regular fa-pen-to-square"></i>
-                        </span>
-                      </div>
-                      <div class="cs_avatar_info">
-                        <h2 class="cs_fs_24 cs_medium cs_mb_10">Amanda Jones</h2>
-                        <p class="cs_profile_subtitle mb-0">Property Owner</p>
-                      </div>
-                    </div>
-                    <form class="row cs_profile_form cs_row_gap_40 cs_gap_y_20">
-                      <div class="col-sm-6">
-                        <label for="fname">First Name</label>
-                        <input type="text" name="fname" class="cs_form_field cs_radius_7" id="fname">
-                      </div>
-                      <div class="col-sm-6">
-                        <label for="lname">Last Name</label>
-                        <input type="text" name="lname" class="cs_form_field cs_radius_7" id="lname">
-                      </div>
-                      <div class="col-sm-6">
-                        <label for="email">Email</label>
-                        <input type="email" name="email" class="cs_form_field cs_radius_7" id="email">
-                      </div>
-                      <div class="col-sm-6">
-                        <label for="phone">Phone</label>
-                        <input type="number" name="phone" class="cs_form_field cs_radius_7" id="phone">
-                      </div>
-                      <div class="col-lg-12">
-                        <label for="bio">Bio Summary</label>
-                        <textarea name="bio" id="bio" rows="5" class="cs_form_field cs_radius_7"></textarea>
-                      </div>
-                      <div class="col-lg-12">
-                        <button type="submit" aria-label="Submit button" class="cs_btn cs_style_1 cs_accent_bg cs_white_color cs_medium cs_radius_7">
-                        <span>Update Profile</span>
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-                <div class="cs_tab" id="dashboard">
-                  <div class="cs_dashboard_content_wrapper">
-                    <div class="cs_dashboard_contentbox">
-                      <div class="row cs_gap_y_20">
-                        <div class="col-md-6">
-                          <div class="cs_iconbox cs_style_5 cs_white_bg cs_radius_10">
-                            <div class="cs_iconbox_info">
-                              <h2 class="cs_fs_28 cs_semibold mb-0">3,576</h2>
-                              <h3 class="cs_fs_16 cs_semibold mb-0">Properties for Ready</h3>
-                              <p class="cs_fs_14 mb-0">Target 2k/month</p>
-                            </div>
-                            <div class="cs_iconbox_icon cs_center cs_radius_50">
-                              <div class="cs_round_progress_wrap">
-                                <div class="cs_round_progress_in text-light">
-                                  <div class="cs_round_progress_number cs_fs_14 cs_bold cs_heading_color">
-                                    <span data-count-to="75" class="odometer"></span>%
-                                  </div>
+
+                 <div class="cs_tab" id="dashboard">
+                    <div class="cs_dashboard_content_wrapper">
+                      <div class="cs_dashboard_contentbox">
+                       <div class="row cs_gap_y_20">
+                         <div class="col-md-12">
+                           <div class="roi_form_wrapper cs_white_bg cs_radius_10 p-4">
+                             <!-- ROI Info Boxes -->
+                          <div class="roi_info_boxes d-flex flex-wrap gap-3 mb-4">
+                            <div class="roi_info_box flex-fill p-3 cs_white_bg cs_radius_10 border">
+                               <h4 class="cs_semibold mb-2">What is ROI?</h4>
+                               <p class="mb-0 cs_fs_14">
+                                 ROI (Return on Investment) is a metric used to measure the profitability of an investment, expressed as a percentage of the initial cost. Backend will compute the actual value based on inputs.
+                               </p>
+                               </div>
+                               <div class="roi_info_box flex-fill p-3 cs_white_bg cs_radius_10 border">
+                               <h4 class="cs_semibold mb-2">Why is it Useful?</h4>
+                                <p class="mb-0 cs_fs_14">
+                                Helps investors compare opportunities, assess risk, and make informed decisions to maximise returns.
+                               </p>
+                              </div>
+                             </div>
+
+                             <!-- Key Scoring Factors Form -->
+                              <form id="roi-form" class="roi_form">
+                               <div class="row g-3">
+                                <!-- each field: same structure as before (kept concise) -->
+                                  <div class="col-md-6">
+                                    <label for="roiForecast" class="form-label">ROI Forecast</label>
+                                    <select id="roiForecast" class="form-select cs_numeric_select" data-key="roiForecast">
+                             
+
+                                    <option value="">Select score</option>
+                                    <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option>
+                                    <option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
+                                  </select>
                                 </div>
-                                <div class="cs_round_progress text-info">
-                                  <svg class="cs_round_progress_percentage" viewBox="0 0 100 100" width="163" height="163" data-percent="75">
-                                    <circle cx="50" cy="50" r="40"></circle>
-                                  </svg>
+
+                                <div class="col-md-6">
+                                 <label for="developerReputation" class="form-label">Developer Reputation</label>
+                                 <select id="developerReputation" class="form-select cs_numeric_select" data-key="developerReputation">
+                                    <option value="">Select score</option>
+                                    <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option>
+                                    <option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
+                                  </select>
+                                </div>
+
+                                
+                                <div class="col-md-6">
+                                    <label for="paymentDelivery" class="form-label">Payment Plan Flexibility / Delivery Timeline</label>
+                                    <select id="paymentDelivery" class="form-select cs_numeric_select" data-key="paymentDelivery">
+                                    <option value="">Select score</option>
+                                    <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option>
+                                    <option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
+                                  </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                   <label for="fomoSales" class="form-label">FOMO / Market Urgency & Sales Velocity</label>
+                                    <select id="fomoSales" class="form-select cs_numeric_select" data-key="fomoSales">
+                                    <option value="">Select score</option>
+                                    <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option>
+                                    <option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
+                                  </select>
+                                </div>
+
+                                  <div class="col-md-6">
+                                    <label for="areaPrestige" class="form-label">Area Prestige</label>
+                                    <select id="areaPrestige" class="form-select cs_numeric_select" data-key="areaPrestige">
+                                    <option value="">Select score</option>
+                                    <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option>
+                                    <option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
+                                  </select>
+                                </div>
+
+                                
+                                  <div class="col-md-6">
+                                    <label for="amenitiesFit" class="form-label">Amenities Fit</label>
+                                    <select id="amenitiesFit" class="form-select cs_numeric_select" data-key="amenitiesFit">
+                                    <option value="">Select score</option>
+                                    <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option>
+                                    <option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
+                                  </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="pricePerSqrM" class="form-label">Price per SQM</label>
+                                    <select id="pricePerSqrM" class="form-select cs_numeric_select" data-key="pricePerSqrM">
+                                    <option value="">Select score</option>
+                                    <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option>
+                                    <option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
+                                  </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="legalType" class="form-label">Legal / Ownership Clarity & Property Type Match</label>
+                                    <select id="legalType" class="form-select cs_numeric_select" data-key="legalType">
+                                    <option value="">Select score</option>
+                                    <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option>
+                                    <option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
+                                  </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="launchTiming" class="form-label">Launch Timing Fit</label>
+                                    <select id="launchTiming" class="form-select cs_numeric_select" data-key="launchTiming">
+                                    <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option>
+                                    <option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
+                                  </select>
                                 </div>
                               </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-md-6">
-                          <div class="cs_iconbox cs_style_5 cs_white_bg cs_radius_10">
-                            <div class="cs_iconbox_info">
-                              <h2 class="cs_fs_28 cs_semibold mb-0">7,362</h2>
-                              <h3 class="cs_fs_16 cs_semibold mb-0">Properties for Rent</h3>
-                              <p class="cs_fs_14 mb-0">Target 3.5k/month</p>
-                            </div>
-                            <div class="cs_iconbox_icon cs_center cs_radius_50">
-                              <div class="cs_round_progress_wrap">
-                                <div class="cs_round_progress_in text-light">
-                                  <div class="cs_round_progress_number cs_fs_14 cs_bold cs_heading_color">
-                                    <span data-count-to="95" class="odometer"></span>%
-                                  </div>
-                                </div>
-                                <div class="cs_round_progress cs_accent_color">
-                                  <svg class="cs_round_progress_percentage" viewBox="0 0 100 100" width="163" height="163" data-percent="95">
-                                    <circle cx="50" cy="50" r="40"></circle>
-                                  </svg>
-                                </div>
+
+                              <!-- Buttons -->
+                              <div class="mt-4 d-flex gap-2 align-items-center">
+                                <button type="button" class="cs_btn cs_style_1 roi_btn roi_btn_secondary roi_reset">Reset</button>
+                                <button type="button" class="cs_btn cs_style_1 roi_btn roi_btn_primary roi_apply">Apply</button>
                               </div>
-                            </div>
+                            </form>
                           </div>
                         </div>
                       </div>
@@ -255,7 +325,7 @@
                                     </div>
                                   </div>
                                 </td>
-                                <td>For Ready</td>
+                                <td>Off-Plan</td>
                                 <td>163</td>
                                 <td class="cs_actions text-danger">Sold</td>
                               </tr>
@@ -279,9 +349,9 @@
                                     </div>
                                   </div>
                                 </td>
-                                <td>For Rent</td>
+                                <td>Ready</td>
                                 <td>260</td>
-                                <td class="cs_actions text-danger">Rent</td>
+                                <td class="cs_actions text-danger">Ready</td>
                               </tr>
                               <tr>
                                 <td class="property_thumbnail">
@@ -303,7 +373,7 @@
                                     </div>
                                   </div>
                                 </td>
-                                <td>For Off-Plan</td>
+                                <td>Off-Plan</td>
                                 <td>125</td>
                                 <td class="cs_actions cs_accent_color">Available</td>
                               </tr>
@@ -327,7 +397,7 @@
                                     </div>
                                   </div>
                                 </td>
-                                <td>For Rent</td>
+                                <td>Ready</td>
                                 <td>103</td>
                                 <td class="cs_actions cs_accent_color">Available</td>
                               </tr>
@@ -353,7 +423,7 @@
                                 </td>
                                 <td>Ready</td>
                                 <td>203</td>
-                                <td class="cs_actions cs_accent_color">Available</td>
+                                <td class="cs_actions cs_accent_color">Ready</td>
                               </tr>
                               <tr>
                                 <td class="property_thumbnail">
@@ -399,9 +469,9 @@
                                     </div>
                                   </div>
                                 </td>
-                                <td>For Rent</td>
+                                <td>Ready</td>
                                 <td>260</td>
-                                <td class="cs_actions text-danger">Rent</td>
+                                <td class="cs_actions text-danger">Ready</td>
                               </tr>
                               <tr>
                                 <td class="property_thumbnail">
@@ -619,7 +689,7 @@
                                 </div>
                               </div>
                             </td>
-                            <td>For Rent</td>
+                            <td>Ready</td>
                             <td>260</td>
                             <td class="cs_actions">
                               <a href="edit-property.html" aria-label="Edit button" class="cs_edit cs_accent_color">
@@ -679,7 +749,7 @@
                                 </div>
                               </div>
                             </td>
-                            <td>For Rent</td>
+                            <td>Off-Plan</td>
                             <td>103</td>
                             <td class="cs_actions">
                               <a href="edit-property.html" aria-label="Edit button" class="cs_edit cs_accent_color">
@@ -769,7 +839,7 @@
                                 </div>
                               </div>
                             </td>
-                            <td>For Rent</td>
+                            <td>Off-Plan</td>
                             <td>260</td>
                             <td class="cs_actions">
                               <a href="edit-property.html" aria-label="Edit button" class="cs_edit cs_accent_color">
@@ -867,9 +937,7 @@
                               <option>1</option>
                               <option>2</option>
                               <option>3</option>
-                              <option>4</option>
-                              <option>5</option>
-                              <option>More than 5</option>
+                              <option>4+</option>
                             </select>
                           </div>
                         </div>
@@ -927,10 +995,10 @@
                             <label for="bedrooms">Bedrooms <span>(Optional)</span></label>
                             <select class="cs_custom_select w-100" id="bedrooms">
                               <option label="Select one"></option>
-                              <option value="1_br">1 BR</option>
-                              <option value="2_br">2 BR</option>
-                              <option value="3_br">3 BR</option>
-                              <option value="4+_br">4+ BR</option>
+                              <option value="1">1</option>
+                              <option value="2">2</option>
+                              <option value="3">3</option>
+                              <option value="4+">4+</option>
                             </select>
                           </div>
                           <div class="col-md-4">
@@ -962,12 +1030,6 @@
                           </li>
                           <li>
                             <div class="cs_custom_checkbox">
-                              <input id="check-4" type="checkbox" name="check">
-                              <label for="check-4">Central Heating</label>
-                            </div>
-                          </li>
-                          <li>
-                            <div class="cs_custom_checkbox">
                               <input id="check-5" type="checkbox" name="check">
                               <label for="check-5">Laundry Room</label>	
                             </div>
@@ -982,12 +1044,6 @@
                             <div class="cs_custom_checkbox">
                               <input id="check-7" type="checkbox" name="check">
                               <label for="check-7">Alarm</label>
-                            </div>
-                          </li>
-                          <li>
-                            <div class="cs_custom_checkbox">
-                              <input id="check-8" type="checkbox" name="check">
-                              <label for="check-8">Window Covering</label>
                             </div>
                           </li>
                         </ul>
@@ -1077,7 +1133,7 @@
                                 </div>
                               </div>
                             </td>
-                            <td>For Rent</td>
+                            <td>Off-Plan</td>
                             <td>260</td>
                             <td class="cs_actions">
                               <a href="edit-property.html" aria-label="Edit button" class="cs_edit cs_accent_color">
@@ -1137,7 +1193,7 @@
                                 </div>
                               </div>
                             </td>
-                            <td>For Rent</td>
+                            <td>Ready</td>
                             <td>103</td>
                             <td class="cs_actions">
                               <a href="edit-property.html" aria-label="Edit button" class="cs_edit cs_accent_color">

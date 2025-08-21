@@ -38,7 +38,7 @@
      </div>
     <!-- End Preloader -->
     <!-- Start Header Section -->
-<header class="cs_site_header cs_style_1 cs_sticky_header">
+    <header class="cs_site_header cs_style_1 cs_sticky_header">
       <div class="cs_main_header">
         <div class="container">
           <div class="cs_main_header_in">
@@ -451,5 +451,16 @@
     <script src="assets/js/odometer.js"></script>
     <script src="assets/js/wow.min.js"></script>
     <script src="assets/js/main.js"></script>
+    <script>
+(function () {
+    const container = document.querySelector(".cs_grid_3.cs_products_view");
+  const API_BASE = location.hostname.includes("localhost")
+    ? "http://localhost:3000"
+    : "https://newizz-proje.onrender.com";
+  let currentSort = null;
+
+})();
+    </script>
+
   </body>
 </html>
