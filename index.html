@@ -2417,9 +2417,12 @@
     <script src="assets/js/odometer.js"></script>
     <script src="assets/js/wow.min.js"></script>
     <script src="assets/js/main.js"></script>
-  <script>
+ <script>
 document.addEventListener("DOMContentLoaded", function () {
-  const container = document.querySelector(".row.cs_row_gap_20.cs_gap_y_20"); 
+  // index.html'de kartların bulunduğu satır
+  const featuredContainer = document.querySelector("#featured-container");
+  const popularContainer = document.querySelector("#popular-container");
+
   const API_BASE = location.hostname.includes("localhost")
     ? "http://localhost:3000"
     : "https://newizz-proje.onrender.com";
@@ -2427,57 +2430,68 @@ document.addEventListener("DOMContentLoaded", function () {
   fetch(`${API_BASE}/api/properties`)
     .then((res) => res.json())
     .then((properties) => {
-      container.innerHTML = ""; // statikleri sil
+      // Featured → ilk 4 property
+      featuredContainer.innerHTML = "";
+      properties.slice(0, 4).forEach((property) => {
+        featuredContainer.insertAdjacentHTML("beforeend", makeCard(property));
+      });
 
-      properties.forEach((property) => {
-        const scoreValue = property.score !== undefined ? property.score.toFixed(0) : "N/A";
-
-        const card = `
-          <div class="col-xxl-3 col-md-6 wow fadeInUp">
-            <div class="cs_card cs_style_1 cs_type_1 cs_white_bg cs_radius_15 position-relative p-0">
-              <a href="property-details.html?id=${property.id}" aria-label="Click to visit property details" class="cs_card_thumbnail">
-                <img src="${property.image_url}" alt="Card Image">
-              </a>
-              <div class="cs_card_content">
-                <div class="cs_card_text cs_mb_20">
-                  <h3 class="cs_card_title cs_fs_28 cs_semibold cs_body_font cs_mb_10">
-                    <a href="property-details.html?id=${property.id}" aria-label="Click to visit property details">
-                      ${property.title}
-                    </a>
-                  </h3>
-                  <p class="cs_card_subtitle cs_fs_14 cs_mb_18">
-                    <i class="fa-solid fa-location-dot"></i> ${property.location || ""}
-                  </p>
-                  <ul class="cs_card_features_list cs_mp_0">
-                    <li>${property.beds || 0} BR</li>
-                    <li>${property.baths || 0} baths</li>
-                    <li>${property.area || 0} sqft</li>
-                  </ul>
-                  <div class="cs_separator"></div>
-                </div>
-                <div class="cs_card_price">
-                  <h3 class="cs_card_price_value cs_fs_24 cs_semibold cs_body_font mb-0">
-                    AED ${property.price ? property.price.toLocaleString() : 0}
-                  </h3>
-                </div>
-              </div>
-              <!-- Skor için daire -->
-              <div class="score-circle" style="
-                position:absolute; top:15px; right:15px;
-                background:#fff; border:2px solid #b08d57;
-                border-radius:50%; width:50px; height:50px;
-                display:flex; align-items:center; justify-content:center;
-                font-weight:bold; color:#b08d57;">
-                ${scoreValue}
-              </div>
-              <span class="cs_property_for cs_white_bg cs_accent_color cs_radius_8 position-absolute">Ready</span>
-            </div>
-          </div>
-        `;
-        container.insertAdjacentHTML("beforeend", card);
+      // Popular → sonraki 4 property
+      popularContainer.innerHTML = "";
+      properties.slice(4, 8).forEach((property) => {
+        popularContainer.insertAdjacentHTML("beforeend", makeCard(property));
       });
     })
     .catch((err) => console.error("API Hatası:", err));
+
+  // Kart şablonu (score + resim + bilgiler)
+  function makeCard(property) {
+    const scoreValue = property.score !== undefined ? property.score.toFixed(0) : "N/A";
+    return `
+      <div class="col-xxl-3 col-md-6 wow fadeInUp">
+        <div class="cs_card cs_style_1 cs_type_1 cs_white_bg cs_radius_15 position-relative p-0">
+          <a href="property-details.html?id=${property.id}" aria-label="Click to visit property details" class="cs_card_thumbnail">
+            <img src="${property.image_url || 'assets/img/placeholder.png'}" alt="Card Image">
+          </a>
+          <div class="cs_card_content">
+            <div class="cs_card_text cs_mb_20">
+              <h3 class="cs_card_title cs_fs_28 cs_semibold cs_body_font cs_mb_10">
+                <a href="property-details.html?id=${property.id}">
+                  ${property.title}
+                </a>
+              </h3>
+              <p class="cs_card_subtitle cs_fs_14 cs_mb_18">
+                <i class="fa-solid fa-location-dot"></i> ${property.location || ""}
+              </p>
+              <ul class="cs_card_features_list cs_mp_0">
+                <li>${property.beds || 0} BR</li>
+                <li>${property.baths || 0} baths</li>
+                <li>${property.area || 0} sqft</li>
+              </ul>
+              <div class="cs_separator"></div>
+            </div>
+            <div class="cs_card_price">
+              <h3 class="cs_card_price_value cs_fs_24 cs_semibold cs_body_font mb-0">
+                AED ${property.price ? property.price.toLocaleString() : 0}
+              </h3>
+            </div>
+          </div>
+          <!-- Skor -->
+          <div class="score-circle" style="
+            position:absolute; top:15px; right:15px;
+            background:#fff; border:2px solid #b08d57;
+            border-radius:50%; width:50px; height:50px;
+            display:flex; align-items:center; justify-content:center;
+            font-weight:bold; color:#b08d57;">
+            ${scoreValue}
+          </div>
+          <span class="cs_property_for cs_white_bg cs_accent_color cs_radius_8 position-absolute">
+            Ready
+          </span>
+        </div>
+      </div>
+    `;
+  }
 });
 </script>
 
