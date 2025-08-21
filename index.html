@@ -439,9 +439,14 @@
     <section>
       <div class="container">
         <div class="cs_section_heading cs_style_1 text-center">
-          <h2 class="cs_fs_48 cs_semibold mb-0 wow fadeInDown">Explore the Featured <br> Properties</h2>
+          <h2 class="cs_fs_48 cs_semibold mb-0 wow fadeInDown">
+            Explore the Featured <br> Properties
+          </h2>
         </div>
         <div class="cs_height_80 cs_height_lg_50"></div>
+
+
+
          <div class="row cs_row_gap_20 cs_gap_y_20" id="popular-container"></div>
           <div class="col-xxl-3 col-md-6 wow fadeInUp">
             <div class="cs_card cs_style_1 cs_type_1 cs_white_bg cs_radius_15 position-relative p-0">
@@ -2419,8 +2424,8 @@
     <script src="assets/js/main.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-  // 1️⃣ Container (Featured Properties alanı)
-  const container = document.querySelector(".row.cs_row_gap_20");
+  // 1️⃣ Container (ID ile güvenli seçim)
+  const container = document.getElementById("featured-properties");
   const API_BASE = location.hostname.includes("localhost")
     ? "http://localhost:3000"
     : "https://newizz-proje.onrender.com";
@@ -2518,7 +2523,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 </script>
-
 
 
 
