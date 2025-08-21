@@ -2442,22 +2442,22 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     })
     .catch((err) => console.error("API Hatası:", err));
+function makeCard(property) {
+  // Backend'den gelen ID alanını normalize et
+  const propertyId = property.id || property._id || property.propertyId;
 
-  // ✅ Grid'deki çalışan şablon
-  function makeCard(property) {
-    const scoreValue = property.score !== undefined ? property.score.toFixed(0) : "N/A";
+  const scoreValue = property.score !== undefined ? property.score.toFixed(0) : "N/A";
 
-  
   return `
     <div class="col-xxl-3 col-md-6">
       <div class="cs_card cs_style_1 cs_white_bg cs_radius_15 position-relative">
-        <a href="property-details.html?id=${property.id}" aria-label="Click to visit property details" class="cs_card_thumbnail cs_radius_20">
+        <a href="property-details.html?id=${propertyId}" aria-label="Click to visit property details" class="cs_card_thumbnail cs_radius_20">
           <img src="${property.image_url || 'assets/img/placeholder.png'}" alt="Card Image">
         </a>
         <div class="cs_card_content">
           <div class="cs_card_text cs_mb_16">
             <h3 class="cs_card_title cs_fs_30 cs_semibold cs_body_font cs_mb_10">
-              <a href="property-details.html?id=${property.id}">${property.title}</a>
+              <a href="property-details.html?id=${propertyId}">${property.title}</a>
             </h3>
             <p class="cs_card_subtitle cs_fs_14 cs_mb_18">
               <i class="fa-solid fa-location-dot"></i> ${property.location || ""}
@@ -2475,13 +2475,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 AED ${property.price ? property.price.toLocaleString() : 0}
               </h3>
             </div>
-            <a href="property-details.html?id=${property.id}" class="cs_card_btn cs_center cs_accent_bg cs_white_color cs_radius_7">
+            <a href="property-details.html?id=${propertyId}" class="cs_card_btn cs_center cs_accent_bg cs_white_color cs_radius_7">
               <span><i class="fa-solid fa-arrow-right"></i></span>
               <span><i class="fa-solid fa-arrow-right"></i></span>
             </a>
           </div>
         </div>
-        <!-- Skor -->
         <div class="score-circle" style="
           position:absolute; top:15px; right:15px;
           background:#fff; border:2px solid #b08d57;
@@ -2490,9 +2489,6 @@ document.addEventListener("DOMContentLoaded", function () {
           font-weight:bold; color:#b08d57;">
           ${scoreValue}
         </div>
-        <button type="button" aria-label="Heart button" class="cs_heart_icon cs_center cs_white_bg cs_accent_color cs_radius_50 position-absolute">
-          <i class="fa-regular fa-heart"></i>
-        </button>
       </div>
     </div>
   `;
