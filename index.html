@@ -2419,83 +2419,103 @@
     <script src="assets/js/main.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-  const featuredContainer = document.querySelector("#featured-container");
-  const popularContainer = document.querySelector("#popular-container");
-
+  // 1️⃣ Container (Featured Properties alanı)
+  const container = document.querySelector(".row.cs_row_gap_20");
   const API_BASE = location.hostname.includes("localhost")
     ? "http://localhost:3000"
     : "https://newizz-proje.onrender.com";
 
-  fetch(`${API_BASE}/api/properties`)
-    .then((res) => res.json())
-    .then((properties) => {
-      // Featured → ilk 4 property
-      featuredContainer.innerHTML = "";
-      properties.slice(0, 4).forEach((property) => {
-        featuredContainer.insertAdjacentHTML("beforeend", makeCard(property));
-      });
+  // 2️⃣ Skor Hesaplama (fallback için)
+  function calculateScore10(property) {
+    const weights = {
+      roi: 0.35, payment_plan: 0.10, delivery: 0.05,
+      urgency: 0.10, prestige: 0.05, amenities: 0.02,
+      velocity: 0.05, launch: 0.03, price_per_sqm: 0.05,
+      horizon: 0.03, type_fit: 0.02, legal: 0.05
+    };
+    let score = 0;
+    for (const key in weights) {
+      const numeric = Number(property?.[key]);
+      const value = Number.isNaN(numeric) ? 5 : numeric;
+      const clamped = Math.max(0, Math.min(10, value));
+      score += (clamped / 10) * weights[key] * 10;
+    }
+    return Math.round(score * 100) / 100;
+  }
 
-      // Popular → sonraki 4 property
-      popularContainer.innerHTML = "";
-      properties.slice(4, 8).forEach((property) => {
-        popularContainer.insertAdjacentHTML("beforeend", makeCard(property));
-      });
-    })
-    .catch((err) => console.error("API Hatası:", err));
-function makeCard(property) {
-  // Backend'den gelen ID alanını normalize et
-  const propertyId = property.id || property._id || property.propertyId;
+  // 3️⃣ Kartları render et
+  function renderProperties(data) {
+    container.innerHTML = ""; // önce temizle
 
-  const scoreValue = property.score !== undefined ? property.score.toFixed(0) : "N/A";
+    data.forEach(property => {
+      const propertyId = property._id || property.id; // backend id
+      const backendScore = Number(property.score);
+      const score10 = !isNaN(backendScore) && backendScore > 0
+        ? backendScore
+        : calculateScore10(property);
 
-  return `
-    <div class="col-xxl-3 col-md-6">
-      <div class="cs_card cs_style_1 cs_white_bg cs_radius_15 position-relative">
-        <a href="property-details.html?id=${propertyId}" aria-label="Click to visit property details" class="cs_card_thumbnail cs_radius_20">
-          <img src="${property.image_url || 'assets/img/placeholder.png'}" alt="Card Image">
-        </a>
-        <div class="cs_card_content">
-          <div class="cs_card_text cs_mb_16">
-            <h3 class="cs_card_title cs_fs_30 cs_semibold cs_body_font cs_mb_10">
-              <a href="property-details.html?id=${propertyId}">${property.title}</a>
-            </h3>
-            <p class="cs_card_subtitle cs_fs_14 cs_mb_18">
-              <i class="fa-solid fa-location-dot"></i> ${property.location || ""}
-            </p>
-            <ul class="cs_card_features_list cs_mp_0">
-              <li><i class="fa-solid fa-bed"></i> ${property.beds || 0} BR</li>
-              <li><i class="fa-solid fa-bath"></i> ${property.baths || 0} baths</li>
-              <li><i class="fa-solid fa-ruler-combined"></i> ${property.area || 0} sqft</li>
-            </ul>
-          </div>
-          <div class="cs_card_btns_wrapper">
-            <div class="cs_card_price cs_radius_10">
-              <h4 class="cs_card_price_for cs_fs_16 cs_normal cs_body_font mb-0">Ready</h4>
-              <h3 class="cs_card_price_value cs_fs_24 cs_semibold cs_body_font mb-0">
-                AED ${property.price ? property.price.toLocaleString() : 0}
-              </h3>
-            </div>
-            <a href="property-details.html?id=${propertyId}" class="cs_card_btn cs_center cs_accent_bg cs_white_color cs_radius_7">
-              <span><i class="fa-solid fa-arrow-right"></i></span>
-              <span><i class="fa-solid fa-arrow-right"></i></span>
+      const scoreDisplay = score10.toFixed(1);
+      const formattedPrice = Number(property.price).toLocaleString("en-US");
+      const statusDisplay = property.status || "Ready";
+
+      const card = `
+        <div class="col-xxl-3 col-md-6 wow fadeInUp">
+          <div class="cs_card cs_style_1 cs_white_bg cs_radius_15 position-relative">
+            <a href="property-details.html?id=${propertyId}" aria-label="Click to visit property details" class="cs_card_thumbnail cs_radius_20">
+              <img src="${property.mainImage || 'assets/img/card_img_1.jpg'}" alt="Card Image">
             </a>
+            <div class="cs_card_content">
+              <div class="cs_card_text cs_mb_16">
+                <h3 class="cs_card_title cs_fs_30 cs_semibold cs_body_font cs_mb_10">
+                  <a href="property-details.html?id=${propertyId}">${property.title || "Untitled"}</a>
+                </h3>
+                <p class="cs_card_subtitle cs_fs_14 cs_mb_18">
+                  <i class="fa-solid fa-location-dot"></i> ${property.location || "N/A"}
+                </p>
+                <ul class="cs_card_features_list cs_mp_0">
+                  <li>🛏 ${property.bedrooms || 0} BR</li>
+                  <li>🛁 ${property.bathrooms || 0} baths</li>
+                  <li>📐 ${property.size || 0} sqft</li>
+                </ul>
+              </div>
+              <div class="cs_card_btns_wrapper">
+                <div class="cs_card_price cs_radius_10">
+                  <h4 class="cs_card_price_for cs_fs_16 cs_normal cs_body_font mb-0">${statusDisplay}</h4>
+                  <h3 class="cs_card_price_value cs_fs_24 cs_semibold cs_body_font mb-0">AED ${formattedPrice}</h3>
+                </div>
+                <a href="property-details.html?id=${propertyId}" aria-label="Click to visit property details" class="cs_card_btn cs_center cs_accent_bg cs_white_color cs_radius_7">
+                  <span><i class="fa-solid fa-arrow-right"></i></span>
+                  <span><i class="fa-solid fa-arrow-right"></i></span>
+                </a>
+              </div>
+            </div>
+            <!-- 🔥 Skor gösterimi sağ üst köşe -->
+            <div class="score-circle" style="
+              position:absolute; top:15px; right:15px;
+              background:#fff; border:2px solid #b08d57;
+              border-radius:50%; width:50px; height:50px;
+              display:flex; align-items:center; justify-content:center;
+              font-weight:bold; color:#b08d57;">
+              ${scoreDisplay}
+            </div>
           </div>
         </div>
-        <div class="score-circle" style="
-          position:absolute; top:15px; right:15px;
-          background:#fff; border:2px solid #b08d57;
-          border-radius:50%; width:50px; height:50px;
-          display:flex; align-items:center; justify-content:center;
-          font-weight:bold; color:#b08d57;">
-          ${scoreValue}
-        </div>
-      </div>
-    </div>
-  `;
-}
+      `;
+      container.insertAdjacentHTML("beforeend", card);
+    });
+  }
 
-   
- 
+  // 4️⃣ Backend’den verileri çek
+  fetch(`${API_BASE}/api/properties`)
+    .then(res => res.json())
+    .then(data => {
+      console.log("Properties fetched:", data);
+      renderProperties(data);
+    })
+    .catch(err => {
+      console.error("API error:", err);
+      container.innerHTML = "<p>Failed to load properties.</p>";
+    });
 });
 </script>
 
