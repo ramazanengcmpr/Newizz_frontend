@@ -2417,9 +2417,9 @@
     <script src="assets/js/odometer.js"></script>
     <script src="assets/js/wow.min.js"></script>
     <script src="assets/js/main.js"></script>
-   <script>
+  <script>
 document.addEventListener("DOMContentLoaded", function () {
-  const container = document.querySelector(".row.cs_row_gap_20.cs_gap_y_20");
+  const container = document.querySelector(".row.cs_row_gap_20.cs_gap_y_20"); 
   const API_BASE = location.hostname.includes("localhost")
     ? "http://localhost:3000"
     : "https://newizz-proje.onrender.com";
@@ -2427,9 +2427,9 @@ document.addEventListener("DOMContentLoaded", function () {
   fetch(`${API_BASE}/api/properties`)
     .then((res) => res.json())
     .then((properties) => {
-      container.innerHTML = ""; // statik kartları temizle
+      container.innerHTML = ""; // statikleri sil
 
-      properties.slice(0, 4).forEach((property) => { // sadece 4 featured gösterelim
+      properties.forEach((property) => {
         const scoreValue = property.score !== undefined ? property.score.toFixed(0) : "N/A";
 
         const card = `
@@ -2446,22 +2446,28 @@ document.addEventListener("DOMContentLoaded", function () {
                     </a>
                   </h3>
                   <p class="cs_card_subtitle cs_fs_14 cs_mb_18">
-                    <i class="fa-solid fa-location-dot"></i> ${property.location}
+                    <i class="fa-solid fa-location-dot"></i> ${property.location || ""}
                   </p>
                   <ul class="cs_card_features_list cs_mp_0">
-                    <li>${property.beds} BR</li>
-                    <li>${property.baths} baths</li>
-                    <li>${property.area} sqft</li>
+                    <li>${property.beds || 0} BR</li>
+                    <li>${property.baths || 0} baths</li>
+                    <li>${property.area || 0} sqft</li>
                   </ul>
                   <div class="cs_separator"></div>
                 </div>
                 <div class="cs_card_price">
                   <h3 class="cs_card_price_value cs_fs_24 cs_semibold cs_body_font mb-0">
-                    AED ${property.price.toLocaleString()}
+                    AED ${property.price ? property.price.toLocaleString() : 0}
                   </h3>
                 </div>
               </div>
-              <div class="score-circle" style="position:absolute; top:15px; right:15px; background:#fff; border-radius:50%; width:50px; height:50px; display:flex; align-items:center; justify-content:center; font-weight:bold; color:#b08d57;">
+              <!-- Skor için daire -->
+              <div class="score-circle" style="
+                position:absolute; top:15px; right:15px;
+                background:#fff; border:2px solid #b08d57;
+                border-radius:50%; width:50px; height:50px;
+                display:flex; align-items:center; justify-content:center;
+                font-weight:bold; color:#b08d57;">
                 ${scoreValue}
               </div>
               <span class="cs_property_for cs_white_bg cs_accent_color cs_radius_8 position-absolute">Ready</span>
@@ -2474,6 +2480,7 @@ document.addEventListener("DOMContentLoaded", function () {
     .catch((err) => console.error("API Hatası:", err));
 });
 </script>
+
 
   </body>
 </html>
