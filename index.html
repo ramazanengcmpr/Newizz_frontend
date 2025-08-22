@@ -2607,28 +2607,32 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // ✅ Backend’den verileri çek ve filtrele
   function loadProperties(filter) {          
-    fetch(`${API_BASE}/api/properties`)
-      .then(res => res.json())
-      .then(data => {
-        let filtered;
-        if (filter === "off_plan") {
-          filtered = data.filter(p => (p.status || "").toLowerCase() === "off-plan");
-        } else if (filter === "ready") {
-          filtered = data.filter(p => (p.status || "").toLowerCase() === "ready");
-        } else {
-          filtered = data; // fallback: hepsini göster
-        }
-        renderProperties(filtered);
-      })
-      .catch(err => {
-        console.error("API error:", err);
-        container.innerHTML = "<p>Failed to load properties.</p>";
-      });
-  }
-
-  // ✅ Varsayılan: Off-plan açılır
+  fetch(`${API_BASE}/api/properties`)
+    .then(res => res.json())
+    .then(data => {
+      let filtered;
+      if (filter === "off_plan") {
+        filtered = data.filter(p => {
+          const status = (p.status || "").toLowerCase().replace(/\s|_/g, "-");
+          return status.includes("off-plan");
+        });
+      } else if (filter === "ready") {
+        filtered = data.filter(p => {
+          const status = (p.status || "").toLowerCase().replace(/\s|_/g, "-");
+          return status.includes("ready");
+        });
+      } else {
+        filtered = data; // fallback: hepsi
+      }
+      renderProperties(filtered);
+    })
+    .catch(err => {
+      console.error("API error:", err);
+      container.innerHTML = "<p>Failed to load properties.</p>";
+    });
+}
+// ✅ Varsayılan: Off-plan açılır
   loadProperties("off_plan");
 
   // ✅ Buton eventleri
