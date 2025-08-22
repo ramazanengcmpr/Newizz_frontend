@@ -2550,10 +2550,6 @@ document.addEventListener("DOMContentLoaded", function () {
   // ✅ Kart oluşturma
   function renderProperties(data) {
     container.innerHTML = "";
-    if (!data || data.length === 0) {
-      container.innerHTML = "<p>No properties found.</p>";
-      return;
-    }
     data.forEach(property => {
       const propertyId = property._id || property.id;
       const backendScore = Number(property.score);
@@ -2607,32 +2603,26 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  function loadProperties(filter) {          
-  fetch(`${API_BASE}/api/properties`)
-    .then(res => res.json())
-    .then(data => {
-      let filtered;
-      if (filter === "off_plan") {
-        filtered = data.filter(p => {
-          const status = (p.status || "").toLowerCase().replace(/\s|_/g, "-");
-          return status.includes("off-plan");
-        });
-      } else if (filter === "ready") {
-        filtered = data.filter(p => {
-          const status = (p.status || "").toLowerCase().replace(/\s|_/g, "-");
-          return status.includes("ready");
-        });
-      } else {
-        filtered = data; // fallback: hepsi
-      }
-      renderProperties(filtered);
-    })
-    .catch(err => {
-      console.error("API error:", err);
-      container.innerHTML = "<p>Failed to load properties.</p>";
-    });
-}
-// ✅ Varsayılan: Off-plan açılır
+  // ✅ Backend’den verileri çek ve filtrele
+  function loadProperties(filter) {
+    fetch(`${API_BASE}/api/properties`)
+      .then(res => res.json())
+      .then(data => {
+        let filtered = data;
+        if (filter === "off_plan") {
+          filtered = data.filter(p => (p.status || "").toLowerCase() === "off-plan");
+        } else if (filter === "ready") {
+          filtered = data.filter(p => (p.status || "").toLowerCase() === "ready");
+        }
+        renderProperties(filtered);
+      })
+      .catch(err => {
+        console.error("API error:", err);
+        container.innerHTML = "<p>Failed to load properties.</p>";
+      });
+  }
+
+  // ✅ Varsayılan: Off-plan açılır
   loadProperties("off_plan");
 
   // ✅ Buton eventleri
@@ -2640,6 +2630,7 @@ document.addEventListener("DOMContentLoaded", function () {
   readyBtn.addEventListener("click", () => loadProperties("ready"));
 });
 </script>
+
 
 
   </body>
