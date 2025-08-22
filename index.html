@@ -2521,13 +2521,15 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-  // 1️⃣ Container (Popular Properties alanı)
+  const offPlanBtn = document.getElementById("off_plan");
+  const readyBtn = document.getElementById("ready");
   const container = document.getElementById("popular-properties");
+
   const API_BASE = location.hostname.includes("localhost")
     ? "http://localhost:3000"
     : "https://newizz-proje.onrender.com";
 
-  // 2️⃣ Skor Hesaplama (fallback için)
+  // ✅ Skor Hesaplama (fallback)
   function calculateScore10(property) {
     const weights = {
       roi: 0.35, payment_plan: 0.10, delivery: 0.05,
@@ -2545,12 +2547,15 @@ document.addEventListener("DOMContentLoaded", function () {
     return Math.round(score * 100) / 100;
   }
 
-  // 3️⃣ Kartları render et
+  // ✅ Kart oluşturma
   function renderProperties(data) {
-    container.innerHTML = ""; // önce temizle
-
+    container.innerHTML = "";
+    if (!data || data.length === 0) {
+      container.innerHTML = "<p>No properties found.</p>";
+      return;
+    }
     data.forEach(property => {
-      const propertyId = property._id || property.id; // backend id
+      const propertyId = property._id || property.id;
       const backendScore = Number(property.score);
       const score10 = !isNaN(backendScore) && backendScore > 0
         ? backendScore
@@ -2563,7 +2568,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const card = `
         <div class="col-xxl-3 col-md-6 wow fadeInUp">
           <div class="cs_card cs_style_1 cs_white_bg cs_radius_15 position-relative">
-            <a href="property-details.html?id=${propertyId}" aria-label="Click to visit property details" class="cs_card_thumbnail cs_radius_20">
+            <a href="property-details.html?id=${propertyId}" class="cs_card_thumbnail cs_radius_20">
               <img src="${property.mainImage || 'assets/img/card_img_5.jpg'}" alt="Card Image">
             </a>
             <div class="cs_card_content">
@@ -2582,16 +2587,11 @@ document.addEventListener("DOMContentLoaded", function () {
               </div>
               <div class="cs_card_btns_wrapper">
                 <div class="cs_card_price cs_radius_10">
-                  <h4 class="cs_card_price_for cs_fs_16 cs_normal cs_body_font mb-0">${statusDisplay}</h4>
-                  <h3 class="cs_card_price_value cs_fs_24 cs_semibold cs_body_font mb-0">AED ${formattedPrice}</h3>
+                  <h4 class="cs_card_price_for cs_fs_16">${statusDisplay}</h4>
+                  <h3 class="cs_card_price_value cs_fs_24">AED ${formattedPrice}</h3>
                 </div>
-                <a href="property-details.html?id=${propertyId}" aria-label="Click to visit property details" class="cs_card_btn cs_center cs_accent_bg cs_white_color cs_radius_7">
-                  <span><i class="fa-solid fa-arrow-right"></i></span>
-                  <span><i class="fa-solid fa-arrow-right"></i></span>
-                </a>
               </div>
             </div>
-            <!-- 🔥 Skor gösterimi sağ üst köşe -->
             <div class="score-circle" style="
               position:absolute; top:15px; right:15px;
               background:#fff; border:2px solid #b08d57;
@@ -2607,17 +2607,33 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // 4️⃣ Backend’den verileri çek
-  fetch(`${API_BASE}/api/properties`)
-    .then(res => res.json())
-    .then(data => {
-      console.log("Popular properties fetched:", data);
-      renderProperties(data);
-    })
-    .catch(err => {
-      console.error("API error:", err);
-      container.innerHTML = "<p>Failed to load popular properties.</p>";
-    });
+  // ✅ Backend’den verileri çek ve filtrele
+  function loadProperties(filter) {          
+    fetch(`${API_BASE}/api/properties`)
+      .then(res => res.json())
+      .then(data => {
+        let filtered;
+        if (filter === "off_plan") {
+          filtered = data.filter(p => (p.status || "").toLowerCase() === "off-plan");
+        } else if (filter === "ready") {
+          filtered = data.filter(p => (p.status || "").toLowerCase() === "ready");
+        } else {
+          filtered = data; // fallback: hepsini göster
+        }
+        renderProperties(filtered);
+      })
+      .catch(err => {
+        console.error("API error:", err);
+        container.innerHTML = "<p>Failed to load properties.</p>";
+      });
+  }
+
+  // ✅ Varsayılan: Off-plan açılır
+  loadProperties("off_plan");
+
+  // ✅ Buton eventleri
+  offPlanBtn.addEventListener("click", () => loadProperties("off_plan"));
+  readyBtn.addEventListener("click", () => loadProperties("ready"));
 });
 </script>
 
