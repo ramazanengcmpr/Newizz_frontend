@@ -1777,79 +1777,6 @@ textarea {
   color: var(--heading-color);
 }
 
-/* Auth dropdown */
-.user-menu { position: relative; display: inline-block; }
-.user-dropdown {
-  display: none;
-  position: absolute;
-  right: 0;
-  top: calc(100% + 8px);
-  min-width: 180px;
-  background: #fff;
-  border: 1px solid #E5E7EB;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-  border-radius: 10px;
-  z-index: 1000;
-  padding: 6px 0;
-}
-.user-dropdown.show { display: block; }
-.user-dropdown .divider { height: 1px; background: #F3F4F6; margin: 4px 0; }
-.user-dropdown_link {
-  display: block;
-  width: 100%;
-  text-align: left;
-  background: transparent;
-  border: none;
-  padding: 10px 14px;
-  font-size: 14px;
-  color: #111827;
-  cursor: pointer;
-}
-.user-dropdown_link:hover { background: #F9FAFB; }
-.admin_btn_after_user { margin-left: 10px; }
-
-/* Auth Toast Alerts */
-.auth-alert-container {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 1050;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.auth-alert {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 280px;
-  max-width: 380px;
-  padding: 12px 14px;
-  border-radius: 10px;
-  box-shadow: 0 10px 24px rgba(0,0,0,0.12);
-  color: #fff;
-  animation: authToastIn 200ms ease-out;
-}
-.auth-alert--success { background: #10B981; border: 1px solid #059669; }
-.auth-alert--warning { background: #F59E0B; border: 1px solid #D97706; }
-.auth-alert--danger { background: #EF4444; border: 1px solid #DC2626; }
-.auth-alert__close {
-  margin-left: auto;
-  background: transparent;
-  border: 0;
-  color: inherit;
-  font-size: 18px;
-  line-height: 1;
-  cursor: pointer;
-}
-.auth-alert--hide { opacity: 0; transform: translateY(-8px); transition: all 180ms ease; }
-@keyframes authToastIn { from { opacity: 0; transform: translateY(-8px) } to { opacity: 1; transform: translateY(0) } }
-
-@media (max-width: 575.98px) {
-  .auth-alert-container { left: 10px; right: 10px; top: 10px; }
-  .auth-alert { min-width: auto; width: 100%; }
-}
-
 .cs_section_heading.cs_style_1 {
   position: relative;
   z-index: 1;
@@ -3215,7 +3142,7 @@ textarea {
   }
 }
 .cs_hero.cs_style_2 .cs_hero_text {
-  max-width: 710px;
+  max-width: 1000px;
   position: relative;
   z-index: 1;
 }
@@ -4415,9 +4342,9 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 80px;
-  height: 80px;
-  border: 10px solid #C7A45C;  /* Gold color */
+  width: 60px;
+  height: 60px;
+  border: 12px solid var(--accent-color);
   border-radius: 50%;
   font-size: 14px;
   font-weight: 600;
@@ -4434,7 +4361,7 @@ textarea {
     height: 48px;
     font-size: 12px;
     border-width: 2px;
-    border: 5px solid #C7A45C;  /* Gold */
+    border: 5px solid #90ee90;
   }
 }
 /*--------------------------------------------------------------
@@ -4794,6 +4721,11 @@ textarea {
   bottom: 0;
   overflow: hidden;
   z-index: 0;
+}
+
+.cs_section_heading ul {
+  list-style: none;
+  padding-left: 0;
 }
 
 /*-------------------------------------------------
@@ -5635,7 +5567,7 @@ textarea {
 }
 .cs_filter_heading.cs_style_1 .cs_price_range_in input {
   display: inline-block;
-  max-width: 115px;
+  max-width: 150px;
   padding: 9px 15px;
   border: 1px solid var(--border-color);
   border-radius: 7px;
@@ -6714,6 +6646,7 @@ textarea {
   border-radius: 15px 15px 0 0;
   position: relative;
   z-index: 5;
+  border: 2px solid var(--border-color);
 }
 @media (max-width: 991px) {
   .cs_contact_form_wrapper {
@@ -7003,6 +6936,99 @@ input::-webkit-inner-spin-button {
   .cs_customer_review .cs_actions_btns {
     top: 155px;
   }
+}
+
+/* Button styles — site-friendly, uses your theme variables */
+.roi_form_wrapper .roi_btn {
+  font-family: var(--body-font-family);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 8px;
+  transition: transform 0.12s ease, box-shadow 0.12s ease,
+    background-color 0.12s ease, color 0.12s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Primary button (filled) */
+.roi_form_wrapper .roi_btn_primary {
+  background: var(--accent-color);
+  color: var(--white-color);
+  border: 1px solid var(--accent-color);
+  box-shadow: 0 6px 18px rgba(15, 37, 63, 0.08);
+}
+.roi_form_wrapper .roi_btn_primary:hover,
+.roi_form_wrapper .roi_btn_primary:focus {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(15, 37, 63, 0.12);
+  filter: brightness(0.96);
+  outline: none;
+}
+.roi_form_wrapper .roi_btn_primary:focus-visible {
+  outline: 3px solid rgba(183, 147, 71, 0.18);
+  outline-offset: 2px;
+}
+
+/* Secondary button (outline) */
+.roi_form_wrapper .roi_btn_secondary {
+  background: transparent;
+  color: var(--accent-color);
+  border: 1px solid var(--accent-color);
+}
+.roi_form_wrapper .roi_btn_secondary:hover,
+.roi_form_wrapper .roi_btn_secondary:focus {
+  background: var(--accent-color);
+  color: var(--white-color);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(15, 37, 63, 0.08);
+}
+.roi_form_wrapper .roi_btn_secondary:focus-visible {
+  outline: 3px solid rgba(183, 147, 71, 0.12);
+  outline-offset: 2px;
+}
+
+/* Disabled state */
+.roi_form_wrapper .roi_btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Make sure site .cs_btn base styling isn't overridden; add specificity */
+.cs_btn.cs_style_1.roi_btn {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+/* small responsive tweak */
+@media (max-width: 520px) {
+  .roi_form_wrapper .roi_btn {
+    width: 48%;
+  }
+  .roi_form_wrapper .roi_info_boxes {
+    gap: 10px;
+  }
+}
+/* Make ROI info titles and descriptions bold */
+.roi_form_wrapper .roi_info_box h4 {
+  font-weight: 700;
+}
+
+.roi_form_wrapper .roi_info_box p {
+  font-weight: 600;
+}
+
+/* Make factor labels bold only (no color change) */
+.roi_form_wrapper .form-label,
+.roi_form_wrapper .cs_roi_label,
+.col-md-12 .cs_roi_label,
+.col-md-12 .form-label,
+.roi_form_wrapper label,
+.col-md-12 label {
+  font-weight: 700;
 }
 
 /*------------------------------------------

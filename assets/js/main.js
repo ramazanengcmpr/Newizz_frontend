@@ -54,7 +54,6 @@
     scrollUp();
     loadMore();
     roundPercentInit();
-    authControls();
     if ($.exists(".wow")) {
       new WOW().init();
     }
@@ -345,8 +344,8 @@
       $(".cs_slider_range").slider({
         range: true,
         min: 0,
-        max: 1000000,
-        values: [150000, 700800],
+        max: 25000000,
+        values: [1500000, 17000800],
         slide: function (event, ui) {
           $(".cs_amount").val(
             "Price: AED " + ui.values[0] + " - AED " + ui.values[1]
@@ -508,83 +507,58 @@
       });
     }
   }
-
-  /*--------------------------------------------------------------
-    17. Auth Controls (Navbar)
-  --------------------------------------------------------------*/
-  function authControls() {
-    try {
-      var headerRight = document.querySelector('.cs_main_header_right');
-      if (!headerRight) return;
-
-      var token = localStorage.getItem('authToken');
-      var user = null;
-      try { user = JSON.parse(localStorage.getItem('authUser') || 'null'); } catch (e) {}
-
-      if (token && user) {
-        headerRight.innerHTML = `
-          <div class="user-menu">
-            <button type="button" id="userMenuBtn" aria-label="Profile" class="cs_btn cs_style_1 cs_type_1 cs_accent_color cs_fs_15 cs_medium cs_radius_7">
-              <span class="cs_btn_icon"><i class="fa-solid fa-circle-user"></i></span>
-              <span class="cs_btn_text">${user.name || 'Account'}</span>
-            </button>
-            <div id="userDropdown" class="user-dropdown">
-              <a href="profile.html" class="user-dropdown_link">
-                <i class="fa-solid fa-user me-2"></i> Profile
-              </a>
-              <div class="divider"></div>
-              <button id="logoutBtn" type="button" class="user-dropdown_link">
-                <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
-              </button>
-            </div>
-          </div>
-          <a href="admin.html" aria-label="Admin" class="cs_btn cs_style_1 cs_type_1 cs_accent_color cs_fs_15 cs_medium cs_radius_7 admin_btn_after_user">
-            <span class="cs_btn_icon"><i class="fa-solid fa-gear"></i></span>
-            <span class="cs_btn_text">Admin</span>
-          </a>
-        `;
-
-        var logoutBtn = headerRight.querySelector('#logoutBtn');
-        if (logoutBtn) {
-          logoutBtn.addEventListener('click', function () {
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('authUser');
-            window.location.href = 'login.html';
-          });
-        }
-
-        // Dropdown: tıklayınca aç/kapa, dışarı tıklayınca kapan
-        var btn = headerRight.querySelector('#userMenuBtn');
-        var dropdown = headerRight.querySelector('#userDropdown');
-        var hideTimeout = null;
-        if (btn && dropdown) {
-          btn.addEventListener('click', function (e) {
-            e.stopPropagation();
-            var isOpen = dropdown.classList.contains('show');
-            if (isOpen) {
-              dropdown.classList.remove('show');
-            } else {
-              dropdown.classList.add('show');
-            }
-          });
-          document.addEventListener('click', function () {
-            // dışarı tıklamada anında kapanır
-            dropdown.classList.remove('show');
-            if (hideTimeout) { clearTimeout(hideTimeout); hideTimeout = null; }
-          });
-          // Mouse ayrılınca 3 sn sonra kapanır
-          dropdown.addEventListener('mouseleave', function () {
-            hideTimeout = setTimeout(function(){ dropdown.classList.remove('show'); }, 3000);
-          });
-          dropdown.addEventListener('mouseenter', function () {
-            if (hideTimeout) { clearTimeout(hideTimeout); hideTimeout = null; }
-          });
-          dropdown.addEventListener('click', function (e) { e.stopPropagation(); });
-        }
-      }
-    } catch (e) {
-      console.error('Auth UI error:', e);
-    }
-  }
 })(jQuery); // End of use strict
 
+(function () {
+  "use strict";
+  function initROIButtons() {
+    var resetBtn = document.querySelector(".roi_reset");
+    var applyBtn = document.querySelector(".roi_apply");
+    var selects = document.querySelectorAll(".cs_numeric_select");
+
+    if (resetBtn) {
+      resetBtn.addEventListener("click", function () {
+        selects.forEach(function (s) {
+          s.value = "";
+        });
+        // small visual feedback
+        resetBtn.animate(
+          [
+            { transform: "translateY(0)" },
+            { transform: "translateY(-2px)" },
+            { transform: "translateY(0)" },
+          ],
+          { duration: 180 }
+        );
+      });
+    }
+
+    if (applyBtn) {
+      applyBtn.addEventListener("click", function () {
+        var payload = {};
+        selects.forEach(function (s) {
+          var key = s.dataset.key || s.name || null;
+          if (key) payload[key] = s.value === "" ? null : Number(s.value);
+        });
+
+        // frontend-only: console.log the payload. Replace with fetch() for backend.
+        console.log("[ROI] selections payload:", payload);
+
+        // UX: disable briefly and show applied state
+        applyBtn.disabled = true;
+        var orig = applyBtn.textContent;
+        applyBtn.textContent = "Submitted";
+        setTimeout(function () {
+          applyBtn.disabled = false;
+          applyBtn.textContent = orig;
+        }, 900);
+      });
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initROIButtons);
+  } else {
+    initROIButtons();
+  }
+})();
