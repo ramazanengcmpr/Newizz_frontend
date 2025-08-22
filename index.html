@@ -685,8 +685,8 @@
         </div>
         <div class="cs_height_80 cs_height_lg_50"></div>
         <ul class="cs_tab_links cs_style_1 cs_type_2 cs_center cs_fs_24 cs_mp_0">
-          <li class="active"><a href="#off_plan" aria-label="Tab button">Off-Plan</a></li>
-          <li><a href="#ready" aria-label="Tab button">Ready</a></li>
+          <div class="cs_tab active" id="off_plan" aria-label="Tab button">Off-Plan</a></li>
+          <li><div class="cs_tab" id="ready" aria-label="Tab button">Ready</a></li>
         </ul>
       </div>
       <div class="cs_tabs_content_wrapper position-relative">
@@ -694,7 +694,7 @@
         <div class="container">
           <div class="cs_tab_body">
             <div class="cs_tab active" id="for_rent">
-              <div class="row cs_row_gap_20 cs_gap_y_28">
+              <div class="row cs_row_gap_20 cs_gap_y_28" id="popular-properties">
                 <div class="col-xxl-3 col-md-6 wow fadeInUp">
                   <div class="cs_card cs_style_1 cs_white_bg cs_radius_15 position-relative">
                     <a href="property-details.html" aria-label="Click to visit property details" class="cs_card_thumbnail cs_radius_20">
@@ -2519,6 +2519,108 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 </script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  // 1️⃣ Container (Popular Properties alanı)
+  const container = document.getElementById("popular-properties");
+  const API_BASE = location.hostname.includes("localhost")
+    ? "http://localhost:3000"
+    : "https://newizz-proje.onrender.com";
+
+  // 2️⃣ Skor Hesaplama (fallback için)
+  function calculateScore10(property) {
+    const weights = {
+      roi: 0.35, payment_plan: 0.10, delivery: 0.05,
+      urgency: 0.10, prestige: 0.05, amenities: 0.02,
+      velocity: 0.05, launch: 0.03, price_per_sqm: 0.05,
+      horizon: 0.03, type_fit: 0.02, legal: 0.05
+    };
+    let score = 0;
+    for (const key in weights) {
+      const numeric = Number(property?.[key]);
+      const value = Number.isNaN(numeric) ? 5 : numeric;
+      const clamped = Math.max(0, Math.min(10, value));
+      score += (clamped / 10) * weights[key] * 10;
+    }
+    return Math.round(score * 100) / 100;
+  }
+
+  // 3️⃣ Kartları render et
+  function renderProperties(data) {
+    container.innerHTML = ""; // önce temizle
+
+    data.forEach(property => {
+      const propertyId = property._id || property.id; // backend id
+      const backendScore = Number(property.score);
+      const score10 = !isNaN(backendScore) && backendScore > 0
+        ? backendScore
+        : calculateScore10(property);
+
+      const scoreDisplay = score10.toFixed(1);
+      const formattedPrice = Number(property.price).toLocaleString("en-US");
+      const statusDisplay = property.status || "Ready";
+
+      const card = `
+        <div class="col-xxl-3 col-md-6 wow fadeInUp">
+          <div class="cs_card cs_style_1 cs_white_bg cs_radius_15 position-relative">
+            <a href="property-details.html?id=${propertyId}" aria-label="Click to visit property details" class="cs_card_thumbnail cs_radius_20">
+              <img src="${property.mainImage || 'assets/img/card_img_5.jpg'}" alt="Card Image">
+            </a>
+            <div class="cs_card_content">
+              <div class="cs_card_text cs_mb_16">
+                <h3 class="cs_card_title cs_fs_30 cs_semibold cs_body_font cs_mb_10">
+                  <a href="property-details.html?id=${propertyId}">${property.title || "Untitled"}</a>
+                </h3>
+                <p class="cs_card_subtitle cs_fs_14 cs_mb_18">
+                  <i class="fa-solid fa-location-dot"></i> ${property.location || "N/A"}
+                </p>
+                <ul class="cs_card_features_list cs_mp_0">
+                  <li>🛏 ${property.bedrooms || 0} BR</li>
+                  <li>🛁 ${property.bathrooms || 0} baths</li>
+                  <li>📐 ${property.size || 0} sqft</li>
+                </ul>
+              </div>
+              <div class="cs_card_btns_wrapper">
+                <div class="cs_card_price cs_radius_10">
+                  <h4 class="cs_card_price_for cs_fs_16 cs_normal cs_body_font mb-0">${statusDisplay}</h4>
+                  <h3 class="cs_card_price_value cs_fs_24 cs_semibold cs_body_font mb-0">AED ${formattedPrice}</h3>
+                </div>
+                <a href="property-details.html?id=${propertyId}" aria-label="Click to visit property details" class="cs_card_btn cs_center cs_accent_bg cs_white_color cs_radius_7">
+                  <span><i class="fa-solid fa-arrow-right"></i></span>
+                  <span><i class="fa-solid fa-arrow-right"></i></span>
+                </a>
+              </div>
+            </div>
+            <!-- 🔥 Skor gösterimi sağ üst köşe -->
+            <div class="score-circle" style="
+              position:absolute; top:15px; right:15px;
+              background:#fff; border:2px solid #b08d57;
+              border-radius:50%; width:50px; height:50px;
+              display:flex; align-items:center; justify-content:center;
+              font-weight:bold; color:#b08d57;">
+              ${scoreDisplay}
+            </div>
+          </div>
+        </div>
+      `;
+      container.insertAdjacentHTML("beforeend", card);
+    });
+  }
+
+  // 4️⃣ Backend’den verileri çek
+  fetch(`${API_BASE}/api/properties`)
+    .then(res => res.json())
+    .then(data => {
+      console.log("Popular properties fetched:", data);
+      renderProperties(data);
+    })
+    .catch(err => {
+      console.error("API error:", err);
+      container.innerHTML = "<p>Failed to load popular properties.</p>";
+    });
+});
+</script>
+
 
   </body>
 </html>
