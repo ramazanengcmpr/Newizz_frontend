@@ -2620,15 +2620,15 @@ document.addEventListener("DOMContentLoaded", function () {
     readyBtn?.classList.toggle("active", which === "ready");
 
     const doFilter = () => {
-      let key = which === "off_plan" ? "off-plan" : "ready";
-      const filtered = allData.filter((p) => norm(p.status) === norm(key));
-      renderProperties(filtered);
-    };
+  let key = which === "off_plan" ? "offplan" : "ready";
 
-    if (allData.length) {
-      doFilter();
-      return;
-    }
+  // DEBUG: API'den gelen status'leri logla
+  console.log("Filtering for:", key);
+  allData.forEach(p => console.log(" ->", p.status, "=>", norm(p.status)));
+
+  const filtered = allData.filter((p) => norm(p.status) === key);
+  renderProperties(filtered);
+    };
 
     fetch(`${API_BASE}/api/properties`)
       .then((r) => r.json())
