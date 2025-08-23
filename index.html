@@ -2522,74 +2522,80 @@ document.addEventListener("DOMContentLoaded", function () {
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   const offPlanBtn = document.getElementById("off_plan");
-  const readyBtn = document.getElementById("ready");
-  const container = document.getElementById("popular-properties");
+  const readyBtn   = document.getElementById("ready");
+  const container  = document.getElementById("popular-properties");
 
   const API_BASE = location.hostname.includes("localhost")
     ? "http://localhost:3000"
     : "https://newizz-proje.onrender.com";
 
-  // ✅ Skor Hesaplama (fallback)
-  function calculateScore10(property) {
-    const weights = {
-      roi: 0.35, payment_plan: 0.10, delivery: 0.05,
-      urgency: 0.10, prestige: 0.05, amenities: 0.02,
-      velocity: 0.05, launch: 0.03, price_per_sqm: 0.05,
-      horizon: 0.03, type_fit: 0.02, legal: 0.05
-    };
-    let score = 0;
-    for (const key in weights) {
-      const numeric = Number(property?.[key]);
-      const value = Number.isNaN(numeric) ? 5 : numeric;
-      const clamped = Math.max(0, Math.min(10, value));
-      score += (clamped / 10) * weights[key] * 10;
+  // Status'u tek formata indir: "Off-Plan" -> "offplan", "Ready" -> "ready" vb.
+  const norm = (v) => (v || "")
+    .toString()
+    .toLowerCase()
+    .replace(/[\s\-_]/g, ""); // boşluk, altçizgi, tire temizle
+
+  // --- Skor fallback ---
+  function calculateScore10(p) {
+    const w = { roi:.35, payment_plan:.10, delivery:.05, urgency:.10, prestige:.05,
+                amenities:.02, velocity:.05, launch:.03, price_per_sqm:.05,
+                horizon:.03, type_fit:.02, legal:.05 };
+    let s = 0;
+    for (const k in w) {
+      const v = Number.isNaN(Number(p?.[k])) ? 5 : Number(p?.[k]);
+      const c = Math.max(0, Math.min(10, v));
+      s += (c / 10) * w[k] * 10;
     }
-    return Math.round(score * 100) / 100;
+    return Math.round(s * 100) / 100;
   }
 
-  // ✅ Kart oluşturma
-  function renderProperties(data) {
+  // --- Kart bas ---
+  function renderProperties(list) {
     container.innerHTML = "";
-    if (!data || data.length === 0) {
-      container.innerHTML = "<p>No properties found.</p>";
+    if (!list.length) {
+      container.innerHTML = `<div class="w-100 py-5 text-center">No properties found.</div>`;
       return;
     }
-    data.forEach(property => {
-      const propertyId = property._id || property.id;
+
+    list.forEach((property) => {
+      const id = property._id || property.id;
       const backendScore = Number(property.score);
-      const score10 = !isNaN(backendScore) && backendScore > 0
+      const score10 = !Number.isNaN(backendScore) && backendScore > 0
         ? backendScore
         : calculateScore10(property);
 
-      const scoreDisplay = score10.toFixed(1);
-      const formattedPrice = Number(property.price).toLocaleString("en-US");
+      const price = Number(property.price || 0).toLocaleString("en-US");
       const statusDisplay = property.status || "Ready";
 
       const card = `
         <div class="col-xxl-3 col-md-6 wow fadeInUp">
           <div class="cs_card cs_style_1 cs_white_bg cs_radius_15 position-relative">
-            <a href="property-details.html?id=${propertyId}" class="cs_card_thumbnail cs_radius_20">
+            <a href="property-details.html?id=${id}" class="cs_card_thumbnail cs_radius_20" aria-label="Click to visit property details">
               <img src="${property.mainImage || 'assets/img/card_img_5.jpg'}" alt="Card Image">
             </a>
             <div class="cs_card_content">
               <div class="cs_card_text cs_mb_16">
                 <h3 class="cs_card_title cs_fs_30 cs_semibold cs_body_font cs_mb_10">
-                  <a href="property-details.html?id=${propertyId}">${property.title || "Untitled"}</a>
+                  <a href="property-details.html?id=${id}">${property.title || "Untitled"}</a>
                 </h3>
                 <p class="cs_card_subtitle cs_fs_14 cs_mb_18">
                   <i class="fa-solid fa-location-dot"></i> ${property.location || "N/A"}
                 </p>
                 <ul class="cs_card_features_list cs_mp_0">
-                  <li>🛏 ${property.bedrooms || 0} BR</li>
-                  <li>🛁 ${property.bathrooms || 0} baths</li>
-                  <li>📐 ${property.size || 0} sqft</li>
+                  <li>🛏 ${property.bedrooms ?? 0} BR</li>
+                  <li>🛁 ${property.bathrooms ?? 0} baths</li>
+                  <li>📐 ${property.size ?? 0} sqft</li>
                 </ul>
               </div>
               <div class="cs_card_btns_wrapper">
                 <div class="cs_card_price cs_radius_10">
                   <h4 class="cs_card_price_for cs_fs_16">${statusDisplay}</h4>
-                  <h3 class="cs_card_price_value cs_fs_24">AED ${formattedPrice}</h3>
+                  <h3 class="cs_card_price_value cs_fs_24">AED ${price}</h3>
                 </div>
+                <a href="property-details.html?id=${id}" class="cs_card_btn cs_center cs_accent_bg cs_white_color cs_radius_7" aria-label="Click to visit property details">
+                  <span><i class="fa-solid fa-arrow-right"></i></span>
+                  <span><i class="fa-solid fa-arrow-right"></i></span>
+                </a>
               </div>
             </div>
             <div class="score-circle" style="
@@ -2598,42 +2604,53 @@ document.addEventListener("DOMContentLoaded", function () {
               border-radius:50%; width:50px; height:50px;
               display:flex; align-items:center; justify-content:center;
               font-weight:bold; color:#b08d57;">
-              ${scoreDisplay}
+              ${score10.toFixed(1)}
             </div>
           </div>
-        </div>
-      `;
+        </div>`;
       container.insertAdjacentHTML("beforeend", card);
     });
   }
 
-  // ✅ Backend’den verileri çek ve filtrele
-  function loadProperties(filter) {          
+  // --- Veriyi çek & filtrele ---
+  let allData = [];
+  function loadProperties(which) {
+    // tab active sınıfları
+    offPlanBtn?.classList.toggle("active", which === "off_plan");
+    readyBtn?.classList.toggle("active", which === "ready");
+
+    const doFilter = () => {
+      const key = which === "off_plan" ? "offplan" : "ready";
+      const filtered = allData.filter((p) => norm(p.status) === key);
+      renderProperties(filtered);
+    };
+
+    if (allData.length) {
+      doFilter();
+      return;
+    }
+
     fetch(`${API_BASE}/api/properties`)
-      .then(res => res.json())
-      .then(data => {
-        let filtered;
-        if (filter === "off_plan") {
-          filtered = data.filter(p => (p.status || "").toLowerCase() === "off-plan");
-        } else if (filter === "ready") {
-          filtered = data.filter(p => (p.status || "").toLowerCase() === "ready");
-        } else {
-          filtered = data; // fallback: hepsini göster
-        }
-        renderProperties(filtered);
+      .then((r) => r.json())
+      .then((data) => {
+        allData = Array.isArray(data) ? data : [];
+        // Durumları bir kere logla (F12’de görürsün)
+        const uniqueStatuses = [...new Set(allData.map((p) => p.status))];
+        console.log("[Popular] unique statuses from API:", uniqueStatuses);
+        doFilter();
       })
-      .catch(err => {
-        console.error("API error:", err);
-        container.innerHTML = "<p>Failed to load properties.</p>";
+      .catch((e) => {
+        console.error("API error:", e);
+        container.innerHTML = `<div class="w-100 py-5 text-center">Failed to load properties.</div>`;
       });
   }
 
-  // ✅ Varsayılan: Off-plan açılır
+  // Varsayılan: Off-Plan
   loadProperties("off_plan");
 
-  // ✅ Buton eventleri
-  offPlanBtn.addEventListener("click", () => loadProperties("off_plan"));
-  readyBtn.addEventListener("click", () => loadProperties("ready"));
+  // Buton clickleri
+  offPlanBtn?.addEventListener("click", () => loadProperties("off_plan"));
+  readyBtn?.addEventListener("click", () => loadProperties("ready"));
 });
 </script>
 
