@@ -2529,11 +2529,11 @@ document.addEventListener("DOMContentLoaded", function () {
     ? "http://localhost:3000"
     : "https://newizz-proje.onrender.com";
 
-  // Status'u tek formata indir: "Off-Plan" -> "offplan", "Ready" -> "ready" vb.
+  // --- normalize helper (boşluk, tire, altçizgi kaldırır, lowercase yapar)
   const norm = (v) => (v || "")
     .toString()
     .toLowerCase()
-    .replace(/[\s\-_]/g, ""); // boşluk, altçizgi, tire temizle
+    .replace(/[\s\-_]/g, "");
 
   // --- Skor fallback ---
   function calculateScore10(p) {
@@ -2615,13 +2615,13 @@ document.addEventListener("DOMContentLoaded", function () {
   // --- Veriyi çek & filtrele ---
   let allData = [];
   function loadProperties(which) {
-    // tab active sınıfları
+    // tab aktiflik
     offPlanBtn?.classList.toggle("active", which === "off_plan");
     readyBtn?.classList.toggle("active", which === "ready");
 
     const doFilter = () => {
-      const key = which === "off_plan" ? "offplan" : "ready";
-      const filtered = allData.filter((p) => norm(p.status) === key);
+      let key = which === "off_plan" ? "off-plan" : "ready";
+      const filtered = allData.filter((p) => norm(p.status) === norm(key));
       renderProperties(filtered);
     };
 
@@ -2634,7 +2634,6 @@ document.addEventListener("DOMContentLoaded", function () {
       .then((r) => r.json())
       .then((data) => {
         allData = Array.isArray(data) ? data : [];
-        // Durumları bir kere logla (F12’de görürsün)
         const uniqueStatuses = [...new Set(allData.map((p) => p.status))];
         console.log("[Popular] unique statuses from API:", uniqueStatuses);
         doFilter();
