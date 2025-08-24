@@ -2612,44 +2612,52 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // --- Veriyi çek & filtrele ---
-  let allData = [];
-  function loadProperties(which) {
-    // tab aktiflik
-    offPlanBtn?.classList.toggle("active", which === "off_plan");
-    readyBtn?.classList.toggle("active", which === "ready");
+// --- Veriyi çek & filtrele ---
+let allData = [];
 
-    const doFilter = () => {
-  let key = which === "off_plan" ? "offplan" : "ready";
+function loadProperties(which) {
+  // tab aktiflik
+  offPlanBtn?.classList.toggle("active", which === "off_plan");
+  readyBtn?.classList.toggle("active", which === "ready");
 
-  // DEBUG: API'den gelen status'leri logla
-  console.log("Filtering for:", key);
-  allData.forEach(p => console.log(" ->", p.status, "=>", norm(p.status)));
+  const doFilter = () => {
+    const key = which === "off_plan" ? "offplan" : "ready";
 
-  const filtered = allData.filter((p) => norm(p.status) === key);
-  renderProperties(filtered);
-    };
+    // DEBUG: API'den gelen status'leri logla
+    console.log("Filtering for:", key);
+    allData.forEach((p) => console.log(" ->", p.status, "=>", norm(p.status)));
 
-    fetch(`${API_BASE}/api/properties`)
-      .then((r) => r.json())
-      .then((data) => {
-        allData = Array.isArray(data) ? data : [];
-        const uniqueStatuses = [...new Set(allData.map((p) => p.status))];
-        console.log("[Popular] unique statuses from API:", uniqueStatuses);
-        doFilter();
-      })
-      .catch((e) => {
-        console.error("API error:", e);
-        container.innerHTML = `<div class="w-100 py-5 text-center">Failed to load properties.</div>`;
-      });
+    const filtered = allData.filter((p) => norm(p.status) === key);
+    renderProperties(filtered);
+  };
+
+  // veri zaten yüklüyse yeniden çekme
+  if (allData.length) {
+    doFilter();
+    return;
   }
 
-  // Varsayılan: Off-Plan
-  loadProperties("off_plan");
+  fetch(`${API_BASE}/api/properties`)
+    .then((r) => r.json())
+    .then((data) => {
+      allData = Array.isArray(data) ? data : [];
+      const uniqueStatuses = [...new Set(allData.map((p) => p.status))];
+      console.log("[Popular] unique statuses from API:", uniqueStatuses);
+      doFilter();
+    })
+    .catch((e) => {
+      console.error("API error:", e);
+      container.innerHTML = `<div class="w-100 py-5 text-center">Failed to load properties.</div>`;
+    });
+}
 
-  // Buton clickleri
-  offPlanBtn.addEventListener("click", () => loadProperties("offplan"));
-  readyBtn.addEventListener("click", () => loadProperties("ready"));
+// Varsayılan: Off‑Plan
+loadProperties("off_plan");
+
+// Buton clickleri  ✅ BURAYI DÜZELT
+offPlanBtn?.addEventListener("click", () => loadProperties("off_plan"));
+readyBtn?.addEventListener("click", () => loadProperties("ready"));
+
 });
 </script>
 
