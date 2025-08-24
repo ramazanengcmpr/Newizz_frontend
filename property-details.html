@@ -1503,7 +1503,17 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("property-details-type").innerText = property.propertyType || "N/A";
       document.getElementById("property-details-status").innerText = property.status || "N/A";
       document.getElementById("property-year-built").innerText = property.yearBuilt || "N/A";
-      document.getElementById("property-details-description").innerText = property.description || "No description available.";
+
+
+      
+     const descElement = document.getElementById("property-details-description");
+if (descElement) {
+  // Uzun açıklamaları HTML olarak işle
+  descElement.innerHTML = property.description
+    ? `<p>${property.description.replace(/\n/g, "</p><p>")}</p>`
+    : "<p>No description available.</p>";
+}
+
 
 
       const featuresList = document.getElementById("property-features-list");
