@@ -219,6 +219,8 @@
               <div class="cs_single_property_text_wrapper">
                 <h3 class="cs_fs_24 cs_semibold cs_body_font cs_mb_33">Description</h3>
                 <div class="cs_property_description position-relative">
+                  <p id="property-details-description">Loading description...</p>
+                  </div>
                   <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin velit augue, hendrerit et tempor ac, rutrum in diam. Mauris semper augue nec gravida aliquam. Duis ut arcu et ante tincidunt bibendum nec ut nisl. Ut bibendum, justo sed vestibulum malesuada, sapien metus pharetra nunc, nec vulputate ipsum tellus id erat. Nullam augue metus, accumsan a justo eget, rutrum accumsan orci. Mauris libero mi, laoreet a viverra vitae, sagittis eget eros. Integer vel quam interdum, condimentum orci eget, sodales sem.</p>
                   <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin velit augue, hendrerit et tempor ac, rutrum in diam. Mauris semper augue nec gravida aliquam. Duis ut arcu et ante tincidunt bibendum nec ut nisl. Ut bibendum, justo sed vestibulum malesuada, sapien metus pharetra nunc, nec vulputate ipsum tellus id erat. Nullam augue metus, accumsan a justo eget, rutrum accumsan orci. Mauris libero mi, laoreet a viverra vitae, sagittis eget eros. Integer vel quam interdum, condimentum orci eget, sodales sem.</p>
                   <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin velit augue, hendrerit et tempor ac, rutrum in diam. Mauris semper augue nec gravida aliquam. Duis ut arcu et ante tincidunt bibendum nec ut nisl. Ut bibendum, justo sed vestibulum malesuada, sapien metus pharetra nunc, nec vulputate ipsum tellus id erat. Nullam augue metus, accumsan a justo eget, rutrum accumsan orci. Mauris libero mi, laoreet a viverra vitae, sagittis eget eros. Integer vel quam interdum, condimentum orci eget, sodales sem.</p>
@@ -1501,6 +1503,8 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("property-details-type").innerText = property.propertyType || "N/A";
       document.getElementById("property-details-status").innerText = property.status || "N/A";
       document.getElementById("property-year-built").innerText = property.yearBuilt || "N/A";
+      document.getElementById("property-details-description").innerText = property.description || "No description available.";
+
 
       const featuresList = document.getElementById("property-features-list");
       if (featuresList) {
