@@ -1414,7 +1414,6 @@
     <script src="assets/js/odometer.js"></script>
     <script src="assets/js/wow.min.js"></script>
     <script src="assets/js/main.js"></script>
-
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   // ✅ Ortak API base
@@ -1610,6 +1609,15 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .catch(err => console.error("❌ Slider API Hatası:", err));
   }
+
+  /* ---------------------------
+   * 4) Patch: yanlış default.jpg} hatasını düzelt
+   * --------------------------- */
+  document.querySelectorAll("img").forEach(img => {
+    if (img.src.includes("default.jpg%7D")) {
+      img.src = "assets/img/default.jpg";
+    }
+  });
 });
 </script>
 
