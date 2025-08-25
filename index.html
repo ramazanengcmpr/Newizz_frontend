@@ -95,7 +95,7 @@
         <!-- Start Filter Tabs Section -->
         <div class="cs_tabs cs_style_1 cs_type_1 wow fadeInUp" data-wow-delay="400ms">
           <ul class="cs_tab_links cs_style_1 cs_type_1 cs_center cs_mp_0 tab_links">
-            <li class="active"><a href="#off_plan" aria-label="Tab Link Off_Plan">Off plaaaaaaaans</a></li>
+            <li class="active"><a href="#off_plan" aria-label="Tab Link Off_Plan">Off plannnnnnnn</a></li>
             <li><a href="#ready" aria-label="Tab Link Ready">Ready</a></li>
           </ul>
           <div class="cs_tab_body cs_white_bg cs_radius_20">
@@ -597,9 +597,10 @@
         </div>
         <div class="cs_height_80 cs_height_lg_50"></div>
         <ul class="cs_tab_links cs_style_1 cs_type_2 cs_center cs_fs_24 cs_mp_0">
-         <li><button class="cs_tab active" id="off_plan" aria-label="Tab button">Off-Plan</button></li>
-         <li><button class="cs_tab" id="ready" aria-label="Tab button">Ready</button></li>
-         </ul>
+          <li><button class="cs_tab active" id="popular_off" aria-label="Tab button">Off-Plan</button></li>
+          <li><button class="cs_tab" id="popular_ready" aria-label="Tab button">Ready</button></li>
+        </ul>
+
       </div>
       <div class="cs_tabs_content_wrapper position-relative">
         <div class="cs_height_130 cs_height_lg_50"></div>
@@ -1839,148 +1840,79 @@ document.addEventListener("DOMContentLoaded", function () {
     ? "http://localhost:3000"
     : "https://newizz-proje.onrender.com";
 
-  // Shared helper: score fallback
-  function calculateScore10(property) {
-    const weights = {
-      roi: 0.35, payment_plan: 0.10, delivery: 0.05,
-      urgency: 0.10, prestige: 0.05, amenities: 0.02,
-      velocity: 0.05, launch: 0.03, price_per_sqm: 0.05,
-      horizon: 0.03, type_fit: 0.02, legal: 0.05
-    };
-    let score = 0;
-    for (const key in weights) {
-      const raw = Number(property?.[key]);
-      const v = Number.isNaN(raw) ? 5 : raw;
-      const c = Math.max(0, Math.min(10, v));
-      score += (c / 10) * weights[key] * 10;
-    }
-    return Math.round(score * 100) / 100;
-  }
+  // ------- Featured (keep your existing Featured code if it's working) -------
 
-  // ========== SECTION 1: Featured (all properties) ==========
-  (function setupFeatured() {
-    const container = document.getElementById("featured-properties");
+  // ------- Popular (Off-Plan / Ready) -------
+  (function setupPopular() {
+    const container  = document.getElementById("popular-properties");
+    const offBtn     = document.getElementById("popular_off");
+    const readyBtn   = document.getElementById("popular_ready");
     if (!container) return;
 
-    function renderFeatured(data) {
-      container.innerHTML = "";
-      data.forEach((property) => {
-        const propertyId   = property._id || property.id;
-        const backendScore = Number(property.score);
-        const score10      = (!Number.isNaN(backendScore) && backendScore > 0)
-          ? backendScore
-          : calculateScore10(property);
+    // Sanity check: make sure IDs are unique
+    console.log("#popular_off count:", document.querySelectorAll("#popular_off").length);
+    console.log("#popular_ready count:", document.querySelectorAll("#popular_ready").length);
 
-        const scoreDisplay   = score10.toFixed(1);
-        const formattedPrice = Number(property.price || 0).toLocaleString("en-US");
-        const statusDisplay  = property.status || "Ready";
-        const imgSrc         = property.mainImage || "assets/img/card_img_1.jpg";
-
-        const card = `
-          <div class="col-xxl-3 col-md-6 wow fadeInUp">
-            <div class="cs_card cs_style_1 cs_white_bg cs_radius_15 position-relative">
-              <a href="property-details.html?id=${propertyId}" class="cs_card_thumbnail cs_radius_20" aria-label="Click to visit property details">
-                <img src="${imgSrc}" alt="Card Image">
-              </a>
-              <div class="cs_card_content">
-                <div class="cs_card_text cs_mb_16">
-                  <h3 class="cs_card_title cs_fs_30 cs_semibold cs_body_font cs_mb_10">
-                    <a href="property-details.html?id=${propertyId}">${property.title || "Untitled"}</a>
-                  </h3>
-                  <p class="cs_card_subtitle cs_fs_14 cs_mb_18">
-                    <i class="fa-solid fa-location-dot"></i> ${property.location || "N/A"}
-                  </p>
-                  <ul class="cs_card_features_list cs_mp_0">
-                    <li>🛏 ${property.bedrooms ?? 0} BR</li>
-                    <li>🛁 ${property.bathrooms ?? 0} baths</li>
-                    <li>📐 ${property.size ?? 0} sqft</li>
-                  </ul>
-                </div>
-                <div class="cs_card_btns_wrapper">
-                  <div class="cs_card_price cs_radius_10">
-                    <h4 class="cs_card_price_for cs_fs_16">${statusDisplay}</h4>
-                    <h3 class="cs_card_price_value cs_fs_24">AED ${formattedPrice}</h3>
-                  </div>
-                  <a href="property-details.html?id=${propertyId}" class="cs_card_btn cs_center cs_accent_bg cs_white_color cs_radius_7" aria-label="Click to visit property details">
-                    <span><i class="fa-solid fa-arrow-right"></i></span>
-                    <span><i class="fa-solid fa-arrow-right"></i></span>
-                  </a>
-                </div>
-              </div>
-              <div class="score-circle" style="
-                position:absolute; top:15px; right:15px;
-                background:#fff; border:2px solid #b08d57;
-                border-radius:50%; width:50px; height:50px;
-                display:flex; align-items:center; justify-content:center;
-                font-weight:bold; color:#b08d57;">
-                ${scoreDisplay}
-              </div>
-            </div>
-          </div>`;
-        container.insertAdjacentHTML("beforeend", card);
-      });
+    // Map any status string into a bucket
+    function toBucket(status) {
+      const s = (status || "").toLowerCase();
+      if (/off\s*[- ]?\s*plan/.test(s)) return "offplan";            // Off-Plan / Off Plan / offplan
+      if (/ready/.test(s)) return "ready";                            // Ready / Ready to move
+      if (/completed|complete/.test(s)) return "ready";               // Completed
+      if (/handover|hand\-over/.test(s)) return "ready";              // Handover 2026
+      return "unknown";
     }
 
-    fetch(`${API_BASE}/api/properties`)
-      .then((res) => res.json())
-      .then((data) => renderFeatured(Array.isArray(data) ? data : []))
-      .catch(() => {
-        container.innerHTML = "<p>Failed to load properties.</p>";
-      });
-  })();
-
-  // ========== SECTION 2: Popular (Off-Plan / Ready tabs) ==========
-  (function setupPopular() {
-    console.log('>>>>>>>>> hello insode func')
-    const offPlanBtn = document.getElementById("off_plan");
-    const readyBtn   = document.getElementById("ready");
-    const container  = document.getElementById("popular-properties");
-    if (!container || (!offPlanBtn && !readyBtn)) return;
-
-    const norm = (v) => (v || "").toString().toLowerCase().replace(/[\s\-_]/g, "");
+    function calculateScore10(p) {
+      const w = { roi:.35, payment_plan:.10, delivery:.05, urgency:.10, prestige:.05,
+                  amenities:.02, velocity:.05, launch:.03, price_per_sqm:.05,
+                  horizon:.03, type_fit:.02, legal:.05 };
+      let s = 0;
+      for (const k in w) {
+        const raw = Number(p?.[k]);
+        const v = Number.isNaN(raw) ? 5 : raw;
+        const c = Math.max(0, Math.min(10, v));
+        s += (c / 10) * w[k] * 10;
+      }
+      return Math.round(s * 100) / 100;
+    }
 
     function renderPopular(list) {
-    console.log('>>>>>>>>> hello insode renderPopular')
-
       container.innerHTML = "";
       if (!list.length) {
         container.innerHTML = `<div class="w-100 py-5 text-center">No properties found.</div>`;
         return;
       }
-      list.forEach((property) => {
-        const id           = property._id || property.id;
-        const backendScore = Number(property.score);
-        const score10      = (!Number.isNaN(backendScore) && backendScore > 0)
-          ? backendScore
-          : calculateScore10(property);
-
-        const price         = Number(property.price || 0).toLocaleString("en-US");
-        const statusDisplay = property.status || "Ready";
-        const imgSrc        = property.mainImage || "assets/img/card_img_5.jpg";
+      list.forEach((p) => {
+        const id    = p._id || p.id;
+        const img   = p.mainImage || "assets/img/card_img_5.jpg";
+        const price = Number(p.price || 0).toLocaleString("en-US");
+        const backendScore = Number(p.score);
+        const score = (!Number.isNaN(backendScore) && backendScore > 0) ? backendScore : calculateScore10(p);
 
         const card = `
           <div class="col-xxl-3 col-md-6 wow fadeInUp">
             <div class="cs_card cs_style_1 cs_white_bg cs_radius_15 position-relative">
               <a href="property-details.html?id=${id}" class="cs_card_thumbnail cs_radius_20" aria-label="Click to visit property details">
-                <img src="${imgSrc}" alt="Card Image">
+                <img src="${img}" alt="Card Image">
               </a>
               <div class="cs_card_content">
                 <div class="cs_card_text cs_mb_16">
                   <h3 class="cs_card_title cs_fs_30 cs_semibold cs_body_font cs_mb_10">
-                    <a href="property-details.html?id=${id}">${property.title || "Untitled"}</a>
+                    <a href="property-details.html?id=${id}">${p.title || "Untitled"}</a>
                   </h3>
                   <p class="cs_card_subtitle cs_fs_14 cs_mb_18">
-                    <i class="fa-solid fa-location-dot"></i> ${property.location || "N/A"}
+                    <i class="fa-solid fa-location-dot"></i> ${p.location || "N/A"}
                   </p>
                   <ul class="cs_card_features_list cs_mp_0">
-                    <li>🛏 ${property.bedrooms ?? 0} BR</li>
-                    <li>🛁 ${property.bathrooms ?? 0} baths</li>
-                    <li>📐 ${property.size ?? 0} sqft</li>
+                    <li>🛏 ${p.bedrooms ?? 0} BR</li>
+                    <li>🛁 ${p.bathrooms ?? 0} baths</li>
+                    <li>📐 ${p.size ?? 0} sqft</li>
                   </ul>
                 </div>
                 <div class="cs_card_btns_wrapper">
                   <div class="cs_card_price cs_radius_10">
-                    <h4 class="cs_card_price_for cs_fs_16">${statusDisplay}</h4>
+                    <h4 class="cs_card_price_for cs_fs_16">${p.status || "Ready"}</h4>
                     <h3 class="cs_card_price_value cs_fs_24">AED ${price}</h3>
                   </div>
                   <a href="property-details.html?id=${id}" class="cs_card_btn cs_center cs_accent_bg cs_white_color cs_radius_7" aria-label="Click to visit property details">
@@ -1995,7 +1927,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 border-radius:50%; width:50px; height:50px;
                 display:flex; align-items:center; justify-content:center;
                 font-weight:bold; color:#b08d57;">
-                ${score10.toFixed(1)}
+                ${score.toFixed(1)}
               </div>
             </div>
           </div>`;
@@ -2003,46 +1935,51 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
 
-    let allData = [];
+    let ALL = [];
 
-    function load(which) {
-      console.log('>>>>>>>>>>>>>>> isnide load')
-      offPlanBtn?.classList.toggle("active", which === "off_plan");
-      readyBtn?.classList.toggle("active", which === "ready");
-
-      const key = which === "off_plan" ? "offplan" : "ready";
-
-      const doFilter = () => {
-        const filtered = allData.filter((p) => norm(p.status) === key);
-        renderPopular(filtered);
-      };
-
-      if (allData.length) {
-        doFilter();
+    function renderWhich(which) {
+      const bucket = which === "ready" ? "ready" : "offplan";
+      const filtered = ALL.filter(p => toBucket(p.status || p.projectStatus || p.state || p.category) === bucket);
+      console.log(`[POPULAR] bucket=${bucket}, filtered=${filtered.length}`);
+      if (!filtered.length && ALL.length) {
+        console.warn(`[POPULAR] No "${bucket}" items. Falling back to ALL to avoid blank UI.`);
+        renderPopular(ALL.slice(0, 12));
         return;
       }
-
-      fetch(`${API_BASE}/api/properties`)
-        .then((r) => r.json())
-        .then((data) => {
-          allData = Array.isArray(data) ? data : [];
-          console.log('>>>>>>>>>>>>>> all data', allData)
-          console.log("[Popular] unique statuses from API:", [...new Set(allData.map((p) => p.status))]);
-          doFilter();
-        })
-        .catch((e) => {
-          console.error("API error:", e);
-          container.innerHTML = `<div class="w-100 py-5 text-center">Failed to load properties.</div>`;
-        });
+      renderPopular(filtered);
     }
 
-    // Default tab
-    load("off_plan");
-    offPlanBtn?.addEventListener("click", () => load("off_plan"));
-    readyBtn?.addEventListener("click", () => load("ready"));
+    // Load once, then filter
+    fetch(`${API_BASE}/api/properties`)
+      .then(r => r.json())
+      .then(data => {
+        ALL = Array.isArray(data) ? data : [];
+        console.log("[POPULAR] unique raw statuses:", [...new Set(ALL.map(p => p.status))]);
+        renderWhich("off_plan"); // default
+      })
+      .catch(e => {
+        console.error("API error:", e);
+        container.innerHTML = `<div class="w-100 py-5 text-center">Failed to load properties.</div>`;
+      });
+
+    // Wire buttons (unique IDs!)
+    offBtn?.addEventListener("click", (e) => {
+      e.preventDefault?.();
+      offBtn.classList.add("active");
+      readyBtn?.classList.remove("active");
+      renderWhich("off_plan");
+    });
+
+    readyBtn?.addEventListener("click", (e) => {
+      e.preventDefault?.();
+      readyBtn.classList.add("active");
+      offBtn?.classList.remove("active");
+      renderWhich("ready");
+    });
   })();
 });
 </script>
+
 
   </body>
 </html>
