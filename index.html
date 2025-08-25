@@ -95,7 +95,7 @@
         <!-- Start Filter Tabs Section -->
         <div class="cs_tabs cs_style_1 cs_type_1 wow fadeInUp" data-wow-delay="400ms">
           <ul class="cs_tab_links cs_style_1 cs_type_1 cs_center cs_mp_0 tab_links">
-            <li class="active"><a href="#off_plan" aria-label="Tab Link Off_Plan">Off-Plan</a></li>
+            <li class="active"><a href="#off_plan" aria-label="Tab Link Off_Plan">Off plaaaaaaaans</a></li>
             <li><a href="#ready" aria-label="Tab Link Ready">Ready</a></li>
           </ul>
           <div class="cs_tab_body cs_white_bg cs_radius_20">
@@ -1931,6 +1931,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // ========== SECTION 2: Popular (Off-Plan / Ready tabs) ==========
   (function setupPopular() {
+    console.log('>>>>>>>>> hello insode func')
     const offPlanBtn = document.getElementById("off_plan");
     const readyBtn   = document.getElementById("ready");
     const container  = document.getElementById("popular-properties");
@@ -1939,6 +1940,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const norm = (v) => (v || "").toString().toLowerCase().replace(/[\s\-_]/g, "");
 
     function renderPopular(list) {
+    console.log('>>>>>>>>> hello insode renderPopular')
+
       container.innerHTML = "";
       if (!list.length) {
         container.innerHTML = `<div class="w-100 py-5 text-center">No properties found.</div>`;
@@ -2003,6 +2006,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let allData = [];
 
     function load(which) {
+      console.log('>>>>>>>>>>>>>>> isnide load')
       offPlanBtn?.classList.toggle("active", which === "off_plan");
       readyBtn?.classList.toggle("active", which === "ready");
 
@@ -2022,6 +2026,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .then((r) => r.json())
         .then((data) => {
           allData = Array.isArray(data) ? data : [];
+          console.log('>>>>>>>>>>>>>> all data', allData)
           console.log("[Popular] unique statuses from API:", [...new Set(allData.map((p) => p.status))]);
           doFilter();
         })
